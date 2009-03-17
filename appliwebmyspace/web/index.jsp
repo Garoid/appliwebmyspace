@@ -11,25 +11,48 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Utilisation de l'API MySpace</title>
+        <link rel=stylesheet type="text/css" href="style.css">
     </head>
     <body>
-        <h2>Utilisation de l'API MySpace</h2>
-        <form method="post" action="Extraction">
-            URL : <input type="text" name="url" /><br />
-            Nom du profil MySpace : <input type="text" name="profil" /><br />
-            Profondeur des amis : <select name="profondeur">
-                <option value="1" selected>1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-            </select><br />
-            <input type="submit" value="Envoyer" />
-        </form>
+        <div id="wrap">
+            <div id="header">
+                <h1><a href="#">GraphSpace</a></h1>
+                <h2>Represent your friends network...</h2>
+            </div>
+            <div id="content">
+                <h2><a href="#">Graph</a></h2>
+            </div>
+
+            <div id="rightmenu">
+                <h2>Enter your informations</h2>
+                <ul>
+                    <form method="post" action="Extraction">
+                        <li><a href="#">ID du profil MySpace</a>
+                        <input type="text" name="id" /></li><br />
+                        <li><a href="#">Profondeur des amis</a></li>
+                        <li><select name="profondeur">
+                                <option value="1" selected>1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                            </select>
+                        </li><br />
+                        <li><input type="submit" value="Envoyer" /></li>
+                    </form>
+                </ul>
+            </div>
+
+            <div style="clear: both;"> </div>
+
+            <div id="footer">
+            </div>
+
+        </div>
     </body>
 </html>

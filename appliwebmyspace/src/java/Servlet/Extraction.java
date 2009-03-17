@@ -31,12 +31,15 @@ public class Extraction extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
-            WebPageExtractor extractor = new WebPageExtractor(new URL("http://www.google.fr"));
-            extractor.extract();
-            // show internal structure
-            //out.println(extractor.toString());
-            // show extracted text
-            out.println("========================\n" + extractor.getTitle());
+            if (request.getParameter("id") != null) {
+                WebPageExtractor extractor = new WebPageExtractor(new URL("http://profile.myspace.com/index.cfm?fuseaction=user.viewProfile&friendID=" + request.getParameter("id")));
+                extractor.extract();
+                //ContentBlock cb = new ContentBlock();
+                // show internal structure
+                //out.println(extractor.toString());
+                // show extracted text
+                out.println("========================\n" + extractor.getTitle());
+            }
         } finally {
             out.close();
         }
