@@ -3,18 +3,10 @@
     Created on : 10 mars 2009, 16:23:24
     Author     : jasonleborgne
 --%>
-<%@ page 
-import="fr.inria.edelweiss.extractor.webpage.*" 
-import="java.net.URL"
-import="java.net.MalformedURLException"
-import="java.io.IOException"
-
-%>
-
+<%@page import="java.net.URL;" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
-
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -22,7 +14,8 @@ import="java.io.IOException"
     </head>
     <body>
         <h2>Utilisation de l'API MySpace</h2>
-        <form method="post" onsubmit="">
+        <form method="post" action="Extraction">
+            URL : <input type="text" name="url" /><br />
             Nom du profil MySpace : <input type="text" name="profil" /><br />
             Profondeur des amis : <select name="profondeur">
                 <option value="1" selected>1</option>
@@ -38,22 +31,5 @@ import="java.io.IOException"
             </select><br />
             <input type="submit" value="Envoyer" />
         </form>
-        <%
-        try {
-			WebPageExtractor extractor = new WebPageExtractor(new URL("http://www.google.fr"));
-			extractor.extract();
-			// show internal structure
-			//out.println(extractor.toString());
-			// show extracted text
-			out.println("========================\n"+ extractor.getTitle());
-
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        %>     
     </body>
 </html>
