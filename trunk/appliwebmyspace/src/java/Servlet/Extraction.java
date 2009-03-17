@@ -38,7 +38,11 @@ public class Extraction extends HttpServlet {
                 // show internal structure
                 //out.println(extractor.toString());
                 // show extracted text
+                if (!extractor.getTitle().equalsIgnoreCase("")){
                 out.println("========================\n" + extractor.getTitle());
+                } else {
+                    out.println("L'ID "+request.getParameter("id")+" ne correspond à aucun profil");
+                }
             }
         } finally {
             out.close();
