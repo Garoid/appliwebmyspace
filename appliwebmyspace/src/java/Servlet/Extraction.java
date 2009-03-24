@@ -34,22 +34,29 @@ public class Extraction extends HttpServlet {
             if (request.getParameter("id") != null) {
                 WebPageExtractor extractor = new WebPageExtractor(new URL("http://profile.myspace.com/index.cfm?fuseaction=user.viewProfile&friendID=" + request.getParameter("id")));
                 extractor.extract();
-                //ContentBlock cb = new ContentBlock();
-                // show internal structure
-                //out.println(extractor.toString());
-                // show extracted text
-                if (!extractor.getTitle().equalsIgnoreCase("")){
-                out.println("========================\n" + extractor.getTitle());
+                if (!extractor.getTitle().equalsIgnoreCase("Invalid Friend ID")) {    
+                    System.out.println("Extractor : "+extractor.getTables().size());
+                    out.println("========================\n" + extractor.getTitle()+ "<br />");
+                    out.println("Size : "+extractor.getTables().size());
+                    for (Table tab : extractor.getTables()) {
+                        out.println("Class :" + tab.getTableClass() + "<br />");
+                    }
                 } else {
-                    out.println("L'ID "+request.getParameter("id")+" ne correspond à aucun profil");
+                    out.println("L'ID " + request.getParameter("id") + " ne correspond à aucun profil dans MySpace...");
                 }
+
+
+            //ContentBlock cb = new ContentBlock();
+            // show internal structure
+            //out.println(extractor.toString());
+            // show extracted text
             }
         } finally {
             out.close();
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      * @param request servlet request
