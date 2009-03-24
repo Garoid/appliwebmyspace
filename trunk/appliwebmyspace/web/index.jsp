@@ -12,8 +12,21 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Utilisation de l'API MySpace</title>
         <link rel=stylesheet type="text/css" href="style.css">
+        <script type="text/javascript" src="js/excanvas.js"></script> 
+    <script type="text/javascript" src="js/mootools-1.2.js" ></script>  
+    <script type="text/javascript" src="js/RGraph.js" ></script>  
+    <script type="text/javascript" src="js/testAffichage.js" ></script>
+        <script>
+            
+            /*/function envoiInfo(idM, profondeur){
+                $.get("Extraction",{id:idM.value},function(data){
+                    $("div#myspaceGraph").text(data);
+                });
+            }*/
+            
+        </script>
     </head>
-    <body>
+    <body onload="init();">
         <div id="wrap">
             <div id="header">
                 <h1><a href="#">GraphSpace</a></h1>
@@ -21,12 +34,14 @@
             </div>
             <div id="content">
                 <h2><a href="#">Graph</a></h2>
+                <div id="myspaceGraph"></div>
+                <div id="infovis"></div>
             </div>
 
             <div id="rightmenu">
                 <h2>Enter your informations</h2>
                 <ul>
-                    <form method="post" action="Extraction">
+                    <form method="post" action="#">
                         <li><a href="#">ID du profil MySpace</a>
                         <input type="text" name="id" /></li><br />
                         <li><a href="#">Profondeur des amis</a></li>
@@ -43,7 +58,7 @@
                                 <option value="10">10</option>
                             </select>
                         </li><br />
-                        <li><input type="submit" value="Envoyer" /></li>
+                        <li><input type="submit" value="Envoyer" onclick="envoiInfo(this.form.id,this.form.profondeur); return false;"/></li>
                     </form>
                 </ul>
             </div>

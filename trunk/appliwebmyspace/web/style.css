@@ -113,3 +113,26 @@ padding: 10px 0 10px 0;
 #footer a:hover {
 
 }
+
+#infovis {  
+    width:500px;  
+    height:300px;  
+    background-color:#222;  
+}  
+  
+.node {  
+    color: white;  
+    background-color:transparent;  
+    cursor:pointer;  
+    font-weight:bold;  
+    opacity:0.9;  
+    border:1px solid red;  
+}  
+  
+.node:hover {  
+    cursor:pointer;  
+    color: #222;  
+    background-color:white;  
+    font-weight:bold;  
+    opacity:1;  
+}  
