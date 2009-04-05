@@ -8,21 +8,21 @@ package fr.inria.edelweiss.extractor.webpage;
  *
  * @author guillaume
  */
-public class Table extends ContentBlock {
+public class Div extends ContentBlock {
 
-    private String tableClass = null;
+    private String divClass = null;
 
-    public final String getTableClass() {
-        return tableClass;
+    public final String getDivClass() {
+        return divClass;
     }
 
-    public Table() {
+    public Div() {
         super();
     }
 
-    public Table(String tableClass) {
+    public Div(String divClass) {
         super();
-        this.tableClass = tableClass;
+        this.divClass = divClass;
     }
 
     public String toString() {

@@ -96,6 +96,8 @@ public class WebPageExtractor {
     private LinkedList<Link> m_links = null;
     /** list of table elements in this HTML page */
     private LinkedList<Table> m_tables = null;
+    /** list of div elements in this HTML page */
+    private LinkedList<Div> m_divs = null;
 
     public WebPageExtractor() {
         super();
@@ -304,6 +306,7 @@ public class WebPageExtractor {
         m_content = new LinkedList<ContentBlock>();
         m_links = new LinkedList<Link>();
         m_tables = new LinkedList<Table>();
+        m_divs = new LinkedList<Div>();
 
         // current block of HTML being extracted
         StringBuffer block = new StringBuffer();
@@ -322,6 +325,10 @@ public class WebPageExtractor {
             if (isTable(l_low_part)) // extract <table> of document
             {
                 m_tables.add(new Table(extractAttributeValue("id", l_part)));
+            } else
+            if (isDiv(l_low_part)) // extract <div> of document
+            {
+                m_divs.add(new Div(extractAttributeValue("class", l_part)));
             } else
 
             if (isTag(l_low_part)) {
@@ -581,6 +588,14 @@ public class WebPageExtractor {
         return (word.startsWith("</table"));
     }
 
+    private static boolean isDiv(String word) {
+        return (word.startsWith("<div"));
+    }
+
+    private static boolean endDiv(String word) {
+        return (word.startsWith("</div"));
+    }
+
     /**
      * @return the m_tables
      */
@@ -593,6 +608,20 @@ public class WebPageExtractor {
      */
     public void setTables(LinkedList<Table> m_tables) {
         this.m_tables = m_tables;
+    }
+
+    /**
+     * @return the m_divs
+     */
+    public LinkedList<Div> getDivs() {
+        return m_divs;
+    }
+
+    /**
+     * @param m_divs the m_divs to set
+     */
+    public void setDivs(LinkedList<Div> m_divs) {
+        this.m_divs = m_divs;
     }
 
     /**
