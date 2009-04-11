@@ -20,17 +20,20 @@ public class Anchor extends ContentBlock {
 
 	private String rev = null;
 
+    private String title = null;
+
 	public Anchor() {
 		super();
 	}
 
 	public Anchor(String p_name, String p_href, String p_rel, String p_rev,
-			String p_text) {
+			String p_text, String p_title) {
 		super(p_text);
 		this.name = p_name;
 		this.href = p_href;
 		this.rel = p_rel;
 		this.rev = p_rev;
+        this.title = p_title;
 	}
 
 	public final String getHref() {
@@ -44,6 +47,10 @@ public class Anchor extends ContentBlock {
 	public final String getRel() {
 		return rel;
 	}
+
+    public final String getTitle() {
+        return title;
+    }
 
 	public final String getRev() {
 		return rev;

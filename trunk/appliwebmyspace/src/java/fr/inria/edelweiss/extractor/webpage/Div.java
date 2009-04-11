@@ -11,18 +11,24 @@ package fr.inria.edelweiss.extractor.webpage;
 public class Div extends ContentBlock {
 
     private String divClass = null;
+    private String friendId = null;
 
     public final String getDivClass() {
         return divClass;
+    }
+
+    public final String getFriendId() {
+        return friendId;
     }
 
     public Div() {
         super();
     }
 
-    public Div(String divClass) {
+    public Div(String divClass, String friendId) {
         super();
         this.divClass = divClass;
+        this.friendId = friendId;
     }
 
     public String toString() {
