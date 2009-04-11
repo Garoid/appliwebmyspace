@@ -42,7 +42,7 @@ public class Extraction extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParserConfigurationException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
@@ -55,23 +55,30 @@ public class Extraction extends HttpServlet {
             // 31427788 ID ARMAND GUEIT
 
             if (request.getParameter("id") != null) {
-                WebPageExtractor extractor = new WebPageExtractor(new URL("http://profile.myspace.com/index.cfm?fuseaction=user.viewProfile&friendID=" + request.getParameter("id")));
+                //WebPageExtractor extractor = new WebPageExtractor(new URL("http://profile.myspace.com/index.cfm?fuseaction=user.viewProfile&friendID=" + request.getParameter("id")));
+                WebPageExtractor extractor = new WebPageExtractor(new URL("http://friends.myspace.com/index.cfm?fuseaction=user.viewfriends&friendID=" + request.getParameter("id")));
                 extractor.extract();
-                    
+
                 if (!extractor.getTitle().equalsIgnoreCase("Invalid Friend ID")) {
-                    createXML(extractor);
+                    //createXML(extractor);
                     out.println("Fichier profil.xml a été créé avec succès" + "<br />");
                     out.println("===========================================" + "<br />");
                     out.println("Tous les class des div" + "<br />");
                     out.println("===========================================" + "<br />");
-                    for (Div div : extractor.getDivs()){
-                        out.println(div.getDivClass() + "<br />");
+                    int indexF = 0;
+                    for (Div div : extractor.getDivs()) {
+
+                        if(div.getDivClass()!=null && div.getDivClass().equals("friendHelperBox")){
+                            out.println(div.getFriendId()+" // Pseudo : "+extractor.getAnchors().get(indexF)+"<br />");
+                            indexF++;
+                        }
+
                     }
-                    out.println("Tous les id des table" + "<br />");
-                    out.println("===========================================" + "<br />");
-                    for (Table table : extractor.getTables()){
-                        out.println(table.getTableClass() + "<br />");
-                    }
+                //out.println("Tous les id des table" + "<br />");
+                //out.println("===========================================" + "<br />");
+                //for (Table table : extractor.getTables()){
+                //    out.println(table.getTableClass() + "<br />");
+                //}
                 } else {
                     out.println("L'ID " + request.getParameter("id") + " ne correspond à aucun profil dans MySpace...");
                 }
@@ -82,12 +89,6 @@ public class Extraction extends HttpServlet {
             //out.println(extractor.toString());
             // show extracted text
             }
-        } catch (ParserConfigurationException ex) {
-            Logger.getLogger(Extraction.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (TransformerConfigurationException ex) {
-            Logger.getLogger(Extraction.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (TransformerException ex) {
-            Logger.getLogger(Extraction.class.getName()).log(Level.SEVERE, null, ex);
         } finally {
             out.close();
         }
@@ -103,7 +104,11 @@ public class Extraction extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(Extraction.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -115,7 +120,11 @@ public class Extraction extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(Extraction.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -152,7 +161,7 @@ public class Extraction extends HttpServlet {
         TransformerFactory fact = TransformerFactory.newInstance();
         Transformer transf = fact.newTransformer();
         //transf.setOutputProperty(OutputKeys.STANDALONE, "yes");
-        transf.transform(new DOMSource(document), new StreamResult("/Users/guillaume/NetBeansProjects/appliwebmyspace/profil.xml"));
+        transf.transform(new DOMSource(document), new StreamResult("profil.xml"));
     }
 
     public static void parcourir(Node node) {

@@ -99,6 +99,8 @@ public class WebPageExtractor {
     /** list of div elements in this HTML page */
     private LinkedList<Div> m_divs = null;
 
+    private LinkedList<Anchor> m_anchor = null;
+
     public WebPageExtractor() {
         super();
     }
@@ -307,6 +309,7 @@ public class WebPageExtractor {
         m_links = new LinkedList<Link>();
         m_tables = new LinkedList<Table>();
         m_divs = new LinkedList<Div>();
+        m_anchor = new LinkedList<Anchor>();
 
         // current block of HTML being extracted
         StringBuffer block = new StringBuffer();
@@ -325,13 +328,10 @@ public class WebPageExtractor {
             if (isTable(l_low_part)) // extract <table> of document
             {
                 m_tables.add(new Table(extractAttributeValue("id", l_part)));
-            } else
-            if (isDiv(l_low_part)) // extract <div> of document
+            } else if (isDiv(l_low_part)) // extract <div> of document
             {
-                m_divs.add(new Div(extractAttributeValue("class", l_part)));
-            } else
-
-            if (isTag(l_low_part)) {
+                m_divs.add(new Div(extractAttributeValue("class", l_part), extractAttributeValue("friendid", l_part)));
+            } else if (isTag(l_low_part)) {
                 if (isTitle(l_low_part)) {
                     m_title = lexical.getNextPart(); 	// extract <title> of document
                 } else if (isScript(l_low_part)) // ignore scripts
@@ -366,12 +366,20 @@ public class WebPageExtractor {
                         m_content.add(current);
                     }
 
+                    if (extractAttributeValue("class", l_part) != null && extractAttributeValue("class", l_part).equals("msProfileTextLink")) {
+                        m_anchor.add(new Anchor(extractAttributeValue("name",
+                                l_part), extractAttributeValue("href", l_part),
+                                extractAttributeValue("rel", l_part),
+                                extractAttributeValue("rev", l_part),
+                                StringEscapeUtils.unescapeHtml(l_anchor_text.toString()),
+                                extractAttributeValue("title", l_part)));
+                    }
                     m_content.add(new Anchor(extractAttributeValue("name",
                             l_part), extractAttributeValue("href", l_part),
                             extractAttributeValue("rel", l_part),
                             extractAttributeValue("rev", l_part),
-                            StringEscapeUtils.unescapeHtml(l_anchor_text.toString())));
-
+                            StringEscapeUtils.unescapeHtml(l_anchor_text.toString()),
+                            extractAttributeValue("title", l_part)));
                     // prepare for next block using type of previous block
                     block = new StringBuffer();
                     try {
@@ -615,6 +623,10 @@ public class WebPageExtractor {
      */
     public LinkedList<Div> getDivs() {
         return m_divs;
+    }
+
+    public LinkedList<Anchor> getAnchors() {
+        return m_anchor;
     }
 
     /**
