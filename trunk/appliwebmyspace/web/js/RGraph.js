@@ -41,47 +41,51 @@
    Provides some common utility functions.
 */
 var $_ = {
-	empty: function() {},
+    empty: function() {},
 	
-	fn: function(val) { return function() { return val; }; },
+    fn: function(val) {
+        return function() {
+            return val;
+        };
+    },
 
-	merge: function(){
-		var mix = {};
-		for (var i = 0, l = arguments.length; i < l; i++){
-			var object = arguments[i];
-			if (typeof object != 'object') continue;
-			for (var key in object){
-				var op = object[key], mp = mix[key];
-				mix[key] = (mp && typeof op == 'object' && typeof mp == 'object') ? this.merge(mp, op) : this.unlink(op);
-			}
-		}
-		return mix;
-	},
+    merge: function(){
+        var mix = {};
+        for (var i = 0, l = arguments.length; i < l; i++){
+            var object = arguments[i];
+            if (typeof object != 'object') continue;
+            for (var key in object){
+                var op = object[key], mp = mix[key];
+                mix[key] = (mp && typeof op == 'object' && typeof mp == 'object') ? this.merge(mp, op) : this.unlink(op);
+            }
+        }
+        return mix;
+    },
 
-	unlink: function (object){
-		var unlinked = null;
-		if(this.isArray(object)) {
-				unlinked = [];
-				for (var i = 0, l = object.length; i < l; i++) unlinked[i] = this.unlink(object[i]);
-		} else if(this.isObject(object)) {
-				unlinked = {};
-				for (var p in object) unlinked[p] = this.unlink(object[p]);
-		} else return object;
+    unlink: function (object){
+        var unlinked = null;
+        if(this.isArray(object)) {
+            unlinked = [];
+            for (var i = 0, l = object.length; i < l; i++) unlinked[i] = this.unlink(object[i]);
+        } else if(this.isObject(object)) {
+            unlinked = {};
+            for (var p in object) unlinked[p] = this.unlink(object[p]);
+        } else return object;
 
-		return unlinked;
-	},
+        return unlinked;
+    },
 	
-	isArray: function(obj) {
-		return obj && obj.constructor && obj.constructor.toString().match(/array/i);
-	},
+    isArray: function(obj) {
+        return obj && obj.constructor && obj.constructor.toString().match(/array/i);
+    },
 	
-	isString: function(obj) {
-		return obj && obj.constructor && obj.constructor.toString().match(/string/i);
-	},
+    isString: function(obj) {
+        return obj && obj.constructor && obj.constructor.toString().match(/string/i);
+    },
 	
-	isObject: function(obj) {
-		return obj && obj.constructor && obj.constructor.toString().match(/object/i);
-	}
+    isObject: function(obj) {
+        return obj && obj.constructor && obj.constructor.toString().match(/object/i);
+    }
 } ;
 /*
  * File: Canvas.js
@@ -127,54 +131,54 @@ var $_ = {
    A multi-purpose Canvas object decorator.
 */
 var Canvas = (function () {
-	var ctx, bkctx, mainContainer, labelContainer, canvas, bkcanvas;
-	var config = {
-		'injectInto': 'id',
+    var ctx, bkctx, mainContainer, labelContainer, canvas, bkcanvas;
+    var config = {
+        'injectInto': 'id',
 		
-		'width':200,
-		'height':200,
+        'width':200,
+        'height':200,
 		
-		'backgroundColor':'#333333',
+        'backgroundColor':'#333333',
 		
-		'styles': {
-			'fillStyle':'#000000',
-			'strokeStyle':'#000000'
-		},
+        'styles': {
+            'fillStyle':'#000000',
+            'strokeStyle':'#000000'
+        },
 		
-		'backgroundCanvas': false
-	};
+        'backgroundCanvas': false
+    };
 	
-	function hasCanvas() {
-		hasCanvas.t = hasCanvas.t || typeof(HTMLCanvasElement);
-		return "function" == hasCanvas.t || "object" == hasCanvas.t;
-	};
+    function hasCanvas() {
+        hasCanvas.t = hasCanvas.t || typeof(HTMLCanvasElement);
+        return "function" == hasCanvas.t || "object" == hasCanvas.t;
+    };
 	
-	function create(tag, prop, styles) {
-		var elem = document.createElement(tag);
-		(function(obj, prop) {
-			if(prop) for (var p in prop) obj[p] = prop[p];
-			return arguments.callee;
-		})(elem, prop)(elem.style, styles);
-		 //feature check
-		 if(tag == "canvas" && !hasCanvas() && G_vmlCanvasManager) {
-			elem = G_vmlCanvasManager.initElement(
-				document.body.appendChild(elem));
-		 }
+    function create(tag, prop, styles) {
+        var elem = document.createElement(tag);
+        (function(obj, prop) {
+            if(prop) for (var p in prop) obj[p] = prop[p];
+            return arguments.callee;
+        })(elem, prop)(elem.style, styles);
+        //feature check
+        if(tag == "canvas" && !hasCanvas() && G_vmlCanvasManager) {
+            elem = G_vmlCanvasManager.initElement(
+                document.body.appendChild(elem));
+        }
 		 	
-		return elem;
-	};
+        return elem;
+    };
 	
-	function get(id) {
-		return document.getElementById(id);
-	};
+    function get(id) {
+        return document.getElementById(id);
+    };
 	
-	function translateToCenter(canvas, ctx, w, h) {
-		var width = w? (w - canvas.width) : canvas.width;
-		var height = h? (h - canvas.height) : canvas.height;
-		ctx.translate(width / 2, height / 2);
-	};
+    function translateToCenter(canvas, ctx, w, h) {
+        var width = w? (w - canvas.width) : canvas.width;
+        var height = h? (h - canvas.height) : canvas.height;
+        ctx.translate(width / 2, height / 2);
+    };
 	
-	/*
+    /*
 	   Constructor: Canvas
 	
 	   Canvas constructor.
@@ -216,67 +220,80 @@ var Canvas = (function () {
 	
 	      A new Canvas instance.
 	*/
-	return function(id, opt) {
-		if(arguments.length < 1) throw "Arguments missing";
-		var idLabel = id + "-label", idCanvas = id + "-canvas", idBCanvas = id + "-bkcanvas";
-		opt = $_.merge(config, opt || {});
-		//create elements
-		var dim = { 'width': opt.width, 'height': opt.height };
-		mainContainer = create("div", { 'id': id }, $_.merge(dim, { 'position': 'relative' }));
-		labelContainer = create("div", { 'id': idLabel }, { 
-			'overflow': 'visible',
-			'position': 'absolute',
-			'top': 0,
-			'left': 0,
-			'width': dim.width + 'px',
-			'height': 0
-		});
-		var dimPos = {
-			'position': 'absolute',
-			'top': 0,
-			'left': 0,
-			'width': dim.width + 'px',
-			'height': dim.height + 'px'
-		};
-		canvas = create("canvas", $_.merge({ 'id': idCanvas }, dim), dimPos);
-		var bc = opt.backgroundCanvas;
-		if(bc) {
-			bkcanvas = create("canvas", $_.merge({ 'id': idBCanvas }, dim), dimPos);
-			//append elements
-			mainContainer.appendChild(bkcanvas);
-		}
-		mainContainer.appendChild(canvas);
-		mainContainer.appendChild(labelContainer);
-		get(opt.injectInto).appendChild(mainContainer);
+    return function(id, opt) {
+        if(arguments.length < 1) throw "Arguments missing";
+        var idLabel = id + "-label", idCanvas = id + "-canvas", idBCanvas = id + "-bkcanvas";
+        opt = $_.merge(config, opt || {});
+        //create elements
+        var dim = {
+            'width': opt.width,
+            'height': opt.height
+        };
+        mainContainer = create("div", {
+            'id': id
+        }, $_.merge(dim, {
+            'position': 'relative'
+        }));
+        labelContainer = create("div", {
+            'id': idLabel
+        }, {
+            'overflow': 'visible',
+            'position': 'absolute',
+            'top': 0,
+            'left': 0,
+            'width': dim.width + 'px',
+            'height': 0
+        });
+        var dimPos = {
+            'position': 'absolute',
+            'top': 0,
+            'left': 0,
+            'width': dim.width + 'px',
+            'height': dim.height + 'px'
+        };
+        canvas = create("canvas", $_.merge({
+            'id': idCanvas
+        }, dim), dimPos);
+        var bc = opt.backgroundCanvas;
+        if(bc) {
+            bkcanvas = create("canvas", $_.merge({
+                'id': idBCanvas
+            }, dim), dimPos);
+            //append elements
+            mainContainer.appendChild(bkcanvas);
+        }
+        mainContainer.appendChild(canvas);
+        mainContainer.appendChild(labelContainer);
+        get(opt.injectInto).appendChild(mainContainer);
 		
-		//create contexts
-		ctx = canvas.getContext('2d');
-		translateToCenter(canvas, ctx);
-		var st = opt.styles;
-		for(var s in st) ctx[s] = st[s];
-		if(bc) {
-			bkctx = bkcanvas.getContext('2d');
-			var st = bc.styles;
-			for(var s in st) bkctx[s] = st[s];
-			translateToCenter(bkcanvas, bkctx);
-			bc.impl.init(bkcanvas, bkctx);
-			bc.impl.plot(bkcanvas, bkctx);
-		}
-		//create methods
-		return {
-			'id': id,
-			/*
+        //create contexts
+        ctx = canvas.getContext('2d');
+        translateToCenter(canvas, ctx);
+        var st = opt.styles;
+        for(var s in st) ctx[s] = st[s];
+        if(bc) {
+            bkctx = bkcanvas.getContext('2d');
+            var st = bc.styles;
+            for(var s in st) bkctx[s] = st[s];
+            translateToCenter(bkcanvas, bkctx);
+            bc.impl.init(bkcanvas, bkctx);
+            bc.impl.plot(bkcanvas, bkctx);
+        }
+        //create methods
+        return {
+            'id': id,
+            /*
 			   Method: getCtx
 			
 			   Returns:
 			
 			      Main canvas context.
 			*/
-			getCtx: function() {
-				return ctx;
-			},
+            getCtx: function() {
+                return ctx;
+            },
 
-			/*
+            /*
 			   Method: getElement
 			
 			   Returns:
@@ -284,11 +301,11 @@ var Canvas = (function () {
 			      DOM canvas wrapper generated. More information
 			      about this can be found in the post <http://blog.thejit.org>
 			*/
-			getElement: function() {
-				return mainContainer;
-			},
+            getElement: function() {
+                return mainContainer;
+            },
 			
-			/*
+            /*
 			   Method: resize
 			
 			   Resizes the canvas.
@@ -299,16 +316,16 @@ var Canvas = (function () {
 			      height - New canvas height.
 			
 			*/
-			resize: function(width, height) {
-				(function(canvas, ctx) {
-					translateToCenter(canvas, ctx, width, height);
-					canvas.width = width;
-					canvas.height = height;
-					return arguments.callee;
-				})(canvas, ctx)(bkcanvas, bkctx);
-			},
+            resize: function(width, height) {
+                (function(canvas, ctx) {
+                    translateToCenter(canvas, ctx, width, height);
+                    canvas.width = width;
+                    canvas.height = height;
+                    return arguments.callee;
+                })(canvas, ctx)(bkcanvas, bkctx);
+            },
 			
-			/*
+            /*
 			   Method: getSize
 			
 			   Returns canvas dimensions.
@@ -317,33 +334,36 @@ var Canvas = (function () {
 			
 			      An object with _width_ and _height_ properties.
 			*/
-			getSize: function() {
-				return { 'width': canvas.width, 'height': canvas.height };
-			},
+            getSize: function() {
+                return {
+                    'width': canvas.width,
+                    'height': canvas.height
+                };
+            },
 			
-			/*
+            /*
 			   Method: path
 			   
 			  Performs a _beginPath_ executes _action_ doing then a _type_ ('fill' or 'stroke') and closing the path with closePath.
 			*/
-			path: function(type, action) {
-				ctx.beginPath();
-				action(ctx);
-				ctx[type]();
-				ctx.closePath();
-			},
+            path: function(type, action) {
+                ctx.beginPath();
+                action(ctx);
+                ctx[type]();
+                ctx.closePath();
+            },
 			
-			/*
+            /*
 			   Method: clear
 			
 			   Clears the canvas object.
 			*/		
-			clear: function () {
-				var size = this.getSize();
-				ctx.clearRect(-size.width / 2, -size.height / 2, size.width, size.height);
-			},
+            clear: function () {
+                var size = this.getSize();
+                ctx.clearRect(-size.width / 2, -size.height / 2, size.width, size.height);
+            },
 			
-			/*
+            /*
 			   Method: clearReactangle
 			
 			   Same as <clear> but only clears a section of the canvas.
@@ -355,20 +375,20 @@ var Canvas = (function () {
 			   	bottom - An integer specifying the bottom of the rectangle.
 			   	left - An integer specifying the left of the rectangle.
 			*/		
-			clearRectangle: function (top, right, bottom, left) {
-				//if using excanvas
-				if(!hasCanvas()) {
-					var f0 = ctx.fillStyle;
-					ctx.fillStyle = opt.backgroundColor;
-					ctx.fillRect(left, top, right - left, bottom - top);
-					ctx.fillStyle = f0;
-				} else {
-					//TODO absolutely arbitraty offsets!
-					ctx.clearRect(left, top -2, right - left +2, Math.abs(bottom - top) +5);
-				}
-			},
+            clearRectangle: function (top, right, bottom, left) {
+                //if using excanvas
+                if(!hasCanvas()) {
+                    var f0 = ctx.fillStyle;
+                    ctx.fillStyle = opt.backgroundColor;
+                    ctx.fillRect(left, top, right - left, bottom - top);
+                    ctx.fillStyle = f0;
+                } else {
+                    //TODO absolutely arbitraty offsets!
+                    ctx.clearRect(left, top -2, right - left +2, Math.abs(bottom - top) +5);
+                }
+            },
 			
-			/*
+            /*
 			   Method: makeRect
 			
 			   Draws a rectangle in canvas.
@@ -378,14 +398,14 @@ var Canvas = (function () {
 			      mode - A String sepecifying if mode is "fill" or "stroke".
 			      pos - A set of two coordinates specifying top left and bottom right corners of the rectangle.
 			*/
-			makeRect: function(pos, mode) {
-				if(mode == "fill" || mode == "stroke") {
-					ctx[mode + "Rect"](pos.x1, pos.y1, pos.x2, pos.y2);
-				} else throw "parameter not recognized " + mode;
-			}
+            makeRect: function(pos, mode) {
+                if(mode == "fill" || mode == "stroke") {
+                    ctx[mode + "Rect"](pos.x1, pos.y1, pos.x2, pos.y2);
+                } else throw "parameter not recognized " + mode;
+            }
 			
-		};
-	};
+        };
+    };
 	
 })();
 /*
@@ -450,19 +470,19 @@ var Canvas = (function () {
       A new Complex instance.
 */
 var Complex= function() {
-	if (arguments.length > 1) {
-		this.x= arguments[0];
-		this.y= arguments[1];
+    if (arguments.length > 1) {
+        this.x= arguments[0];
+        this.y= arguments[1];
 		
-	} else {
-		this.x= null;
-		this.y= null;
-	}
+    } else {
+        this.x= null;
+        this.y= null;
+    }
 	
 };
 
 Complex.prototype= {
-	/*
+    /*
 	   Method: clone
 	
 	   Returns a copy of the current object.
@@ -471,11 +491,11 @@ Complex.prototype= {
 	
 	      A copy of the real object.
 	*/
-	clone: function() {
-		return new Complex(this.x, this.y);
-	},
+    clone: function() {
+        return new Complex(this.x, this.y);
+    },
 
-	/*
+    /*
 	   Method: toPolar
 	
 	   Transforms cartesian to polar coordinates.
@@ -485,13 +505,13 @@ Complex.prototype= {
 	      A new <Polar> instance.
 	*/
 	
-	toPolar: function() {
-		var rho = this.norm();
-		var atan = Math.atan2(this.y, this.x);
-		if(atan < 0) atan += Math.PI * 2;
-		return new Polar(atan, rho);
-	},
-	/*
+    toPolar: function() {
+        var rho = this.norm();
+        var atan = Math.atan2(this.y, this.x);
+        if(atan < 0) atan += Math.PI * 2;
+        return new Polar(atan, rho);
+    },
+    /*
 	   Method: norm
 	
 	   Calculates the complex norm.
@@ -500,11 +520,11 @@ Complex.prototype= {
 	
 	      A real number representing the complex norm.
 	*/
-	norm: function () {
-		return Math.sqrt(this.squaredNorm());
-	},
+    norm: function () {
+        return Math.sqrt(this.squaredNorm());
+    },
 	
-	/*
+    /*
 	   Method: squaredNorm
 	
 	   Calculates the complex squared norm.
@@ -513,11 +533,11 @@ Complex.prototype= {
 	
 	      A real number representing the complex squared norm.
 	*/
-	squaredNorm: function () {
-		return this.x*this.x + this.y*this.y;
-	},
+    squaredNorm: function () {
+        return this.x*this.x + this.y*this.y;
+    },
 
-	/*
+    /*
 	   Method: add
 	
 	   Returns the result of adding two complex numbers.
@@ -531,11 +551,11 @@ Complex.prototype= {
 	
 	     The result of adding two complex numbers.
 	*/
-	add: function(pos) {
-		return new Complex(this.x + pos.x, this.y + pos.y);
-	},
+    add: function(pos) {
+        return new Complex(this.x + pos.x, this.y + pos.y);
+    },
 
-	/*
+    /*
 	   Method: prod
 	
 	   Returns the result of multiplying two complex numbers.
@@ -549,11 +569,11 @@ Complex.prototype= {
 	
 	     The result of multiplying two complex numbers.
 	*/
-	prod: function(pos) {
-		return new Complex(this.x*pos.x - this.y*pos.y, this.y*pos.x + this.x*pos.y);
-	},
+    prod: function(pos) {
+        return new Complex(this.x*pos.x - this.y*pos.y, this.y*pos.x + this.x*pos.y);
+    },
 
-	/*
+    /*
 	   Method: conjugate
 	
 	   Returns the conjugate por this complex.
@@ -562,12 +582,12 @@ Complex.prototype= {
 	
 	     The conjugate por this complex.
 	*/
-	conjugate: function() {
-		return new Complex(this.x, -this.y);
-	},
+    conjugate: function() {
+        return new Complex(this.x, -this.y);
+    },
 
 
-	/*
+    /*
 	   Method: scale
 	
 	   Returns the result of scaling a Complex instance.
@@ -581,20 +601,20 @@ Complex.prototype= {
 	
 	     The result of scaling this complex to a factor.
 	*/
-	scale: function(factor) {
-		return new Complex(this.x * factor, this.y * factor);
-	},
+    scale: function(factor) {
+        return new Complex(this.x * factor, this.y * factor);
+    },
 
-	/*
+    /*
 	   Method: equals
 	
 	   Comparison method.
 	*/
-	equals: function(c) {
-		return this.x == c.x && this.y == c.y;
-	},
+    equals: function(c) {
+        return this.x == c.x && this.y == c.y;
+    },
 
-	/*
+    /*
 	   Method: $add
 	
 	   Returns the result of adding two complex numbers.
@@ -608,12 +628,12 @@ Complex.prototype= {
 	
 	     The result of adding two complex numbers.
 	*/
-	$add: function(pos) {
-		this.x += pos.x; this.y += pos.y;
-		return this;	
-	},
+    $add: function(pos) {
+        this.x += pos.x; this.y += pos.y;
+        return this;
+    },
 	
-	/*
+    /*
 	   Method: $prod
 	
 	   Returns the result of multiplying two complex numbers.
@@ -627,14 +647,14 @@ Complex.prototype= {
 	
 	     The result of multiplying two complex numbers.
 	*/
-	$prod:function(pos) {
-		var x = this.x, y = this.y
-		this.x = x*pos.x - y*pos.y;
-		this.y = y*pos.x + x*pos.y;
-		return this;
-	},
+    $prod:function(pos) {
+        var x = this.x, y = this.y
+        this.x = x*pos.x - y*pos.y;
+        this.y = y*pos.x + x*pos.y;
+        return this;
+    },
 	
-	/*
+    /*
 	   Method: $conjugate
 	
 	   Returns the conjugate for this complex.
@@ -644,12 +664,12 @@ Complex.prototype= {
 	
 	     The conjugate for this complex.
 	*/
-	$conjugate: function() {
-		this.y = -this.y;
-		return this;
-	},
+    $conjugate: function() {
+        this.y = -this.y;
+        return this;
+    },
 	
-	/*
+    /*
 	   Method: $scale
 	
 	   Returns the result of scaling a Complex instance.
@@ -663,12 +683,12 @@ Complex.prototype= {
 	
 	     The result of scaling this complex to a factor.
 	*/
-	$scale: function(factor) {
-		this.x *= factor; this.y *= factor;
-		return this;
-	},
+    $scale: function(factor) {
+        this.x *= factor; this.y *= factor;
+        return this;
+    },
 	
-	/*
+    /*
 	   Method: $div
 	
 	   Returns the division of two complex numbers.
@@ -682,12 +702,12 @@ Complex.prototype= {
 	
 	     The result of scaling this complex to a factor.
 	*/
-	$div: function(pos) {
-		var x = this.x, y = this.y;
-		var sq = pos.squaredNorm();
-		this.x = x * pos.x + y * pos.y; this.y = y * pos.x - x * pos.y;
-		return this.$scale(1 / sq);
-	}
+    $div: function(pos) {
+        var x = this.x, y = this.y;
+        var sq = pos.squaredNorm();
+        this.x = x * pos.x + y * pos.y; this.y = y * pos.x - x * pos.y;
+        return this.$scale(1 / sq);
+    }
 };
 
 Complex.KER = new Complex(0, 0);
@@ -716,12 +736,12 @@ Complex.KER = new Complex(0, 0);
 */
 
 var Polar = function(theta, rho) {
-	this.theta = theta;
-	this.rho = rho;
+    this.theta = theta;
+    this.rho = rho;
 };
 
 Polar.prototype = {
-	/*
+    /*
 	   Method: clone
 	
 	   Returns a copy of the current object.
@@ -730,11 +750,11 @@ Polar.prototype = {
 	
 	      A copy of the real object.
 	*/
-	clone: function() {
-		return new Polar(this.theta, this.rho);
-	},
+    clone: function() {
+        return new Polar(this.theta, this.rho);
+    },
 
-	/*
+    /*
 	   Method: toComplex
 	
 	    Translates from polar to cartesian coordinates and returns a new <Complex> instance.
@@ -743,11 +763,11 @@ Polar.prototype = {
 	
 	      A new Complex instance.
 	*/
-	toComplex: function() {
-		return new Complex(Math.cos(this.theta), Math.sin(this.theta)).$scale(this.rho);
-	},
+    toComplex: function() {
+        return new Complex(Math.cos(this.theta), Math.sin(this.theta)).$scale(this.rho);
+    },
 
-	/*
+    /*
 	   Method: add
 	
 	    Adds two <Polar> instances.
@@ -756,11 +776,11 @@ Polar.prototype = {
 	
 	      A new Polar instance.
 	*/
-	add: function(polar) {
-		return new Polar(this.theta + polar.theta, this.rho + polar.rho);
-	},
+    add: function(polar) {
+        return new Polar(this.theta + polar.theta, this.rho + polar.rho);
+    },
 	
-	/*
+    /*
 	   Method: scale
 	
 	    Scales a polar norm.
@@ -769,20 +789,20 @@ Polar.prototype = {
 	
 	      A new Polar instance.
 	*/
-	scale: function(number) {
-		return new Polar(this.theta, this.rho * number);
-	},
+    scale: function(number) {
+        return new Polar(this.theta, this.rho * number);
+    },
 	
-	/*
+    /*
 	   Method: equals
 	
 	   Comparison method.
 	*/
-	equals: function(c) {
-		return this.theta == c.theta && this.rho == c.rho;
-	},
+    equals: function(c) {
+        return this.theta == c.theta && this.rho == c.rho;
+    },
 	
-	/*
+    /*
 	   Method: $add
 	
 	    Adds two <Polar> instances affecting the current object.
@@ -791,12 +811,12 @@ Polar.prototype = {
 	
 	      The changed object.
 	*/
-	$add: function(polar) {
-		this.theta = this.theta + polar.theta; this.rho += polar.rho;
-		return this;
-	},
+    $add: function(polar) {
+        this.theta = this.theta + polar.theta; this.rho += polar.rho;
+        return this;
+    },
 
-	/*
+    /*
 	   Method: $madd
 	
 	    Adds two <Polar> instances affecting the current object. The resulting theta angle is modulo 2pi.
@@ -805,13 +825,13 @@ Polar.prototype = {
 	
 	      The changed object.
 	*/
-	$madd: function(polar) {
-		this.theta = (this.theta + polar.theta) % (Math.PI * 2); this.rho += polar.rho;
-		return this;
-	},
+    $madd: function(polar) {
+        this.theta = (this.theta + polar.theta) % (Math.PI * 2); this.rho += polar.rho;
+        return this;
+    },
 
 	
-	/*
+    /*
 	   Method: $scale
 	
 	    Scales a polar instance affecting the object.
@@ -820,12 +840,12 @@ Polar.prototype = {
 	
 	      The changed object.
 	*/
-	$scale: function(number) {
-		this.rho *= number;
-		return this;
-	},
+    $scale: function(number) {
+        this.rho *= number;
+        return this;
+    },
 	
-	/*
+    /*
 	   Method: interpolate
 	
 	    Calculates a polar interpolation between two points at a given delta moment.
@@ -834,27 +854,27 @@ Polar.prototype = {
 	
 	      A new Polar instance representing an interpolation between _this_ and _elem_
 	*/
-	interpolate: function(elem, delta) {
-		var pi2 = Math.PI * 2;
-		var ch = function(t) {
-			return (t < 0)? (t % pi2) + pi2 : t % pi2;
-		};
-		var tt = ch(this.theta) , et = ch(elem.theta);
-		var sum;
-		if(Math.abs(tt - et) > Math.PI) {
-			if(tt - et > 0) {
-				sum =ch((et + ((tt - pi2) - et)* delta)) ;
-			} else {
-				sum =ch((et - pi2 + (tt - (et - pi2))* delta));
-			}
+    interpolate: function(elem, delta) {
+        var pi2 = Math.PI * 2;
+        var ch = function(t) {
+            return (t < 0)? (t % pi2) + pi2 : t % pi2;
+        };
+        var tt = ch(this.theta) , et = ch(elem.theta);
+        var sum;
+        if(Math.abs(tt - et) > Math.PI) {
+            if(tt - et > 0) {
+                sum =ch((et + ((tt - pi2) - et)* delta)) ;
+            } else {
+                sum =ch((et - pi2 + (tt - (et - pi2))* delta));
+            }
 			
-		} else {
-				sum =ch((et + (tt - et)* delta)) ;
-		}
-		var  t = (sum);
-		var r = (this.rho - elem.rho) * delta + elem.rho;
-		return new Polar(t, r);
-	}
+        } else {
+            sum =ch((et + (tt - et)* delta)) ;
+        }
+        var  t = (sum);
+        var r = (this.rho - elem.rho) * delta + elem.rho;
+        return new Polar(t, r);
+    }
 };
 
 Polar.KER = new Polar(0, 0);
@@ -867,47 +887,47 @@ Polar.KER = new Polar(0, 0);
 */
 
 var Config= {
-		//Property: labelContainer
-		//Id for label container. The label container is a div dom element that must be explicitly added to your page in order to enable the RGraph.
-		labelContainer: 'label_container',
+    //Property: labelContainer
+    //Id for label container. The label container is a div dom element that must be explicitly added to your page in order to enable the RGraph.
+    labelContainer: 'label_container',
 		
-		//Property: levelDistance
-		//The actual distance between levels
-		levelDistance: 100,
+    //Property: levelDistance
+    //The actual distance between levels
+    levelDistance: 100,
 		
-		//Property: nodeRadius
-		//The radius of the nodes displayed
-		nodeRadius: 4,
+    //Property: nodeRadius
+    //The radius of the nodes displayed
+    nodeRadius: 4,
 		
-		//Property: allowVariableNodeDiameters
-		//Set this to true if you want your node diameters to be proportional to you first dataset object value property (i.e _data[0].value_).
-		//This will allow you to represent weighted tree/graph nodes.
-		allowVariableNodeDiameters: false,
+    //Property: allowVariableNodeDiameters
+    //Set this to true if you want your node diameters to be proportional to you first dataset object value property (i.e _data[0].value_).
+    //This will allow you to represent weighted tree/graph nodes.
+    allowVariableNodeDiameters: false,
 		
-		//Property: nodeRangeDiameters
-		//Diameters range. For variable node weights.
-		nodeRangeDiameters: {
-			min: 10,
-			max: 35
-		},
+    //Property: nodeRangeDiameters
+    //Diameters range. For variable node weights.
+    nodeRangeDiameters: {
+        min: 10,
+        max: 35
+    },
 			
-		//Property: nodeRangeValues
-		// The interval of the values of the first object of your dataSet.
-		// A superset of the values can also be specified.
-		nodeRangeValues: {
-			min: 1,
-			max: 35
-		},
+    //Property: nodeRangeValues
+    // The interval of the values of the first object of your dataSet.
+    // A superset of the values can also be specified.
+    nodeRangeValues: {
+        min: 1,
+        max: 35
+    },
 
-		//Property: fps
-		//animation frames per second
-		fps:40,
+    //Property: fps
+    //animation frames per second
+    fps:40,
 		
-		//Property: animationTime
-		animationTime: 2500,
+    //Property: animationTime
+    animationTime: 2500,
 		
-		//Property: interpolation
-		interpolation: 'linear'
+    //Property: interpolation
+    interpolation: 'linear'
 };
 
 /*
@@ -916,151 +936,157 @@ var Config= {
    A multi purpose object to do graph traversal and processing.
 */
 var GraphUtil = {
-	/*
+    /*
 	   Method: filter
 	
 	   For internal use only. Provides a filtering function based on flags.
 	*/
-	filter: function(param) {
-		if(!param || !$_.isString(param)) return function() { return true; };
-		var props = param.split(" ");
-		return function(elem) {
-			for(var i=0; i<props.length; i++) if(elem[props[i]]) return false;
-			return true;
-		};
-	},
-	/*
+    filter: function(param) {
+        if(!param || !$_.isString(param)) return function() {
+            return true;
+        };
+        var props = param.split(" ");
+        return function(elem) {
+            for(var i=0; i<props.length; i++) if(elem[props[i]]) return false;
+            return true;
+        };
+    },
+    /*
 	   Method: getNode
 	
 	   Returns a graph's node with a specified _id_.
 	*/
-	getNode: function(graph, id) {
-		return graph.getNode(id);
-	},
+    getNode: function(graph, id) {
+        return graph.getNode(id);
+    },
 	
-	/*
+    /*
 	   Method: eachNode
 	
 	   Iterates over graph nodes performing an action.
 	*/
-	eachNode: function(graph, action, flags) {
-		var filter = this.filter(flags);
-		for(var i in graph.nodes) if(filter(graph.nodes[i])) action(graph.nodes[i]);
-	},
+    eachNode: function(graph, action, flags) {
+        var filter = this.filter(flags);
+        for(var i in graph.nodes) if(filter(graph.nodes[i])) action(graph.nodes[i]);
+    },
 	
-	/*
+    /*
 	   Method: eachAdjacency
 	
 	   Iterates over a _node_ adjacencies applying the _action_ function.
 	*/
-	eachAdjacency: function(node, action, flags) {
-		var adj = node.adjacencies, filter = this.filter(flags);
-		for(var id in adj) if(filter(adj[id])) action(adj[id], id);
-	},
+    eachAdjacency: function(node, action, flags) {
+        var adj = node.adjacencies, filter = this.filter(flags);
+        for(var id in adj) if(filter(adj[id])) action(adj[id], id);
+    },
 
-	/*
+    /*
 	   Method: computeLevels
 	
 	   Performs a BFS traversal setting correct level for nodes.
 	*/
-	computeLevels: function(graph, id, flags) {
-		var filter = this.filter(flags);
-		this.eachNode(graph, function(elem) {
-			elem._flag = false;
-			elem._depth = -1;
-		}, flags);
-		var root = graph.getNode(id);
-		root._depth = 0;
-		var queue = [root];
-		while(queue.length != 0) {
-			var node = queue.pop();
-			node._flag = true;
-			this.eachAdjacency(node, function(adj) {
-				var n = adj.nodeTo;
-				if(n._flag == false && filter(n)) {
-					if(n._depth < 0) n._depth = node._depth + 1;
-					queue.unshift(n);
-				}
-			}, flags);
-		}
-	},
+    computeLevels: function(graph, id, flags) {
+        var filter = this.filter(flags);
+        this.eachNode(graph, function(elem) {
+            elem._flag = false;
+            elem._depth = -1;
+        }, flags);
+        var root = graph.getNode(id);
+        root._depth = 0;
+        var queue = [root];
+        while(queue.length != 0) {
+            var node = queue.pop();
+            node._flag = true;
+            this.eachAdjacency(node, function(adj) {
+                var n = adj.nodeTo;
+                if(n._flag == false && filter(n)) {
+                    if(n._depth < 0) n._depth = node._depth + 1;
+                    queue.unshift(n);
+                }
+            }, flags);
+        }
+    },
 
-	/*
+    /*
 	   Method: eachBFS
 	
 	   Performs a BFS traversal of a graph beginning by the node of id _id_ and performing _action_ on each node.
 	   This traversal ignores nodes or edges having the property _ignore_ setted to _true_.
 	*/
-	eachBFS: function(graph, id, action, flags) {
-		var filter = this.filter(flags);
-		this.clean(graph);
-		var queue = [graph.getNode(id)];
-		while(queue.length != 0) {
-			var node = queue.pop();
-			node._flag = true;
-			action(node, node._depth);
-			this.eachAdjacency(node, function(adj) {
-				var n = adj.nodeTo;
-				if(n._flag == false && filter(n)) {
-					n._flag = true;
-					queue.unshift(n);
-				}
-			}, flags);
-		}
-	},
+    eachBFS: function(graph, id, action, flags) {
+        var filter = this.filter(flags);
+        this.clean(graph);
+        var queue = [graph.getNode(id)];
+        while(queue.length != 0) {
+            var node = queue.pop();
+            node._flag = true;
+            action(node, node._depth);
+            this.eachAdjacency(node, function(adj) {
+                var n = adj.nodeTo;
+                if(n._flag == false && filter(n)) {
+                    n._flag = true;
+                    queue.unshift(n);
+                }
+            }, flags);
+        }
+    },
 	
-	/*
+    /*
 	   Method: eachSubnode
 	
 	   After a BFS traversal the _depth_ property of each node has been modified. Now the graph can be traversed as a tree. This method iterates for each subnode that has depth larger than the specified node.
 	*/
-	eachSubnode: function(node, action, flags) {
-		var d = node._depth, filter = this.filter(flags);
-		this.eachAdjacency(node, function(adj) {
-			var n = adj.nodeTo;
-			if(n._depth > d && filter(n)) action(n);
-		}, flags);
-	},
+    eachSubnode: function(node, action, flags) {
+        var d = node._depth, filter = this.filter(flags);
+        this.eachAdjacency(node, function(adj) {
+            var n = adj.nodeTo;
+            if(n._depth > d && filter(n)) action(n);
+        }, flags);
+    },
 	
-	/*
+    /*
 	   Method: getSubnodes
 	
 	   Collects all subnodes for a specified node. The _level_ parameter filters nodes having relative depth of _level_ from the root node.
 	*/
-	getSubnodes: function(graph, id, level, flags) {
-		var ans = new Array(), that = this, node = graph.getNode(id);
-		level = level + node._depth;
-		(function(graph, node) {
-			var fn = arguments.callee;
-			if(!level || level <= node._depth)	ans.push(node);
-			that.eachSubnode(node, function(elem) {
-				fn(graph, elem);
-			}, flags);
-		})(graph, node);
-		return ans;
-	},
+    getSubnodes: function(graph, id, level, flags) {
+        var ans = new Array(), that = this, node = graph.getNode(id);
+        level = level + node._depth;
+        (function(graph, node) {
+            var fn = arguments.callee;
+            if(!level || level <= node._depth)	ans.push(node);
+            that.eachSubnode(node, function(elem) {
+                fn(graph, elem);
+            }, flags);
+        })(graph, node);
+        return ans;
+    },
 
-	/*
+    /*
 	   Method: getParents
 	
 	   Returns all nodes having a depth that is less than the node's depth property.
 	*/
-	getParents: function(graph, node) {
-		var adj = node.adjacencies;
-		var ans = new Array();
-		this.eachAdjacency(node, function(adj) {
-			var n = adj.nodeTo;
-			if(n._depth < node._depth) ans.push(n);
-		});
-		return ans;
-	},
+    getParents: function(graph, node) {
+        var adj = node.adjacencies;
+        var ans = new Array();
+        this.eachAdjacency(node, function(adj) {
+            var n = adj.nodeTo;
+            if(n._depth < node._depth) ans.push(n);
+        });
+        return ans;
+    },
 	
-	/*
+    /*
 	   Method: clean
 	
 	   Cleans flags from nodes (by setting the _flag_ property to false).
 	*/
-	clean: function(graph) { this.eachNode(graph, function(elem) { elem._flag = false; }); }
+    clean: function(graph) {
+        this.eachNode(graph, function(elem) {
+            elem._flag = false;
+        });
+    }
 };
 
 /*
@@ -1070,13 +1096,13 @@ var GraphUtil = {
 */
 var GraphOp = {
 
-	options: {
-		type: 'nothing',
-		duration: 2000,
-		fps:30
-	},
+    options: {
+        type: 'nothing',
+        duration: 2000,
+        fps:30
+    },
 	
-	/*
+    /*
 	   Method: removeNode
 	
 	   Removes one or more nodes from the visualization. It can also perform several animations like fading sequentially, fading concurrently, iterating or replotting.
@@ -1088,72 +1114,86 @@ var GraphOp = {
 	      opt - Animation options. It's an object with two properties: _type_, which can be _nothing_, _replot_, _fade:seq_,  _fade:con_ or _iter_. The other property is the _duration_ in milliseconds. 
 	
 	*/
-	removeNode: function(viz, node, opt) {
-		var options = $_.merge(viz.controller, this.options, opt);
-		var n = $_.isString(node)? [node] : node;
-		switch(options.type) {
-			case 'nothing':
-				for(var i=0; i<n.length; i++) 	viz.graph.removeNode(n[i]);
-				break;
+    removeNode: function(viz, node, opt) {
+        var options = $_.merge(viz.controller, this.options, opt);
+        var n = $_.isString(node)? [node] : node;
+        switch(options.type) {
+            case 'nothing':
+                for(var i=0; i<n.length; i++) 	viz.graph.removeNode(n[i]);
+                break;
 			
-			case 'replot':
-				this.removeNode(viz, n, { type: 'nothing' });
-				GraphPlot.clearLabels(viz);
-				viz.refresh();
-				break;
+            case 'replot':
+                this.removeNode(viz, n, {
+                    type: 'nothing'
+                });
+                GraphPlot.clearLabels(viz);
+                viz.refresh();
+                break;
 			
-			case 'fade:seq': case 'fade':
-				var GPlot = GraphPlot, that = this;
-				//set alpha to 0 for nodes to remove.
-				for(var i=0; i<n.length; i++) {
-					var nodeObj = viz.graph.getNode(n[i]);
-					nodeObj.endAlpha = 0;
-				}
-				GPlot.animate(viz, $_.merge(options, {
-					modes: ['fade:nodes'],
-					onComplete: function() {
-						that.removeNode(viz, n, { type: 'nothing' });
-						GPlot.clearLabels(viz);
-						viz.compute('endPos');
-						GPlot.animate(viz, $_.merge(options, {
-							modes: ['linear']
-						}));
-					}
-				}));
-				break;
+            case 'fade:seq': case 'fade':
+                var GPlot = GraphPlot, that = this;
+                //set alpha to 0 for nodes to remove.
+                for(var i=0; i<n.length; i++) {
+                    var nodeObj = viz.graph.getNode(n[i]);
+                    nodeObj.endAlpha = 0;
+                }
+                GPlot.animate(viz, $_.merge(options, {
+                    modes: ['fade:nodes'],
+                    onComplete: function() {
+                        that.removeNode(viz, n, {
+                            type: 'nothing'
+                        });
+                        GPlot.clearLabels(viz);
+                        viz.compute('endPos');
+                        GPlot.animate(viz, $_.merge(options, {
+                            modes: ['linear']
+                        }));
+                    }
+                }));
+                break;
 			
-			case 'fade:con':
-				var GPlot = GraphPlot, that = this;
-				//set alpha to 0 for nodes to remove. Tag them for being ignored on computing positions.
-				for(var i=0; i<n.length; i++) {
-					var nodeObj = viz.graph.getNode(n[i]);
-					nodeObj.endAlpha = 0;
-					nodeObj.ignore = true;
-				}
-				viz.compute('endPos');
-				GPlot.animate(viz, $_.merge(options, {
-					modes: ['fade:nodes', 'linear'],
-					onComplete: function() {
-						that.removeNode(viz, n, { type: 'nothing' });
-					}
-				}));
-				break;
+            case 'fade:con':
+                var GPlot = GraphPlot, that = this;
+                //set alpha to 0 for nodes to remove. Tag them for being ignored on computing positions.
+                for(var i=0; i<n.length; i++) {
+                    var nodeObj = viz.graph.getNode(n[i]);
+                    nodeObj.endAlpha = 0;
+                    nodeObj.ignore = true;
+                }
+                viz.compute('endPos');
+                GPlot.animate(viz, $_.merge(options, {
+                    modes: ['fade:nodes', 'linear'],
+                    onComplete: function() {
+                        that.removeNode(viz, n, {
+                            type: 'nothing'
+                        });
+                    }
+                }));
+                break;
 			
-			case 'iter':
-				var that = this, GPlot = GraphPlot;
-				GPlot.sequence(viz, {
-					condition: function() { return n.length != 0; },
-					step: function() { that.removeNode(viz, n.shift(), { type: 'nothing' });  GPlot.clearLabels(viz); },
-					onComplete: function() { options.onComplete(); },
-					duration: Math.ceil(options.duration / n.length)
-				});
-				break;
+            case 'iter':
+                var that = this, GPlot = GraphPlot;
+                GPlot.sequence(viz, {
+                    condition: function() {
+                        return n.length != 0;
+                    },
+                    step: function() {
+                        that.removeNode(viz, n.shift(), {
+                            type: 'nothing'
+                        });  GPlot.clearLabels(viz);
+                    },
+                    onComplete: function() {
+                        options.onComplete();
+                    },
+                    duration: Math.ceil(options.duration / n.length)
+                });
+                break;
 				
-			default: this.doError();
-		}
-	},
+            default: this.doError();
+        }
+    },
 	
-	/*
+    /*
 	   Method: removeEdge
 	
 	   Removes one or more edges from the visualization. It can also perform several animations like fading sequentially, fading concurrently, iterating or replotting.
@@ -1165,77 +1205,91 @@ var GraphOp = {
 	      opt - Animation options. It's an object with two properties: _type_, which can be _nothing_, _replot_, _fade:seq_,  _fade:con_ or _iter_. The other property is the _duration_ in milliseconds. 
 	
 	*/
-	removeEdge: function(viz, vertex, opt) {
-		var options = $_.merge(viz.controller, this.options, opt);
-		var v = $_.isString(vertex[0])? [vertex] : vertex;
-		switch(options.type) {
-			case 'nothing':
-				for(var i=0; i<v.length; i++) 	viz.graph.removeAdjacence(v[i][0], v[i][1]);
-				break;
+    removeEdge: function(viz, vertex, opt) {
+        var options = $_.merge(viz.controller, this.options, opt);
+        var v = $_.isString(vertex[0])? [vertex] : vertex;
+        switch(options.type) {
+            case 'nothing':
+                for(var i=0; i<v.length; i++) 	viz.graph.removeAdjacence(v[i][0], v[i][1]);
+                break;
 			
-			case 'replot':
-				this.removeEdge(viz, v, { type: 'nothing' });
-				viz.refresh();
-				break;
+            case 'replot':
+                this.removeEdge(viz, v, {
+                    type: 'nothing'
+                });
+                viz.refresh();
+                break;
 			
-			case 'fade:seq': case 'fade':
-				var GPlot = GraphPlot, that = this;
-				//set alpha to 0 for nodes to remove.
-				for(var i=0; i<v.length; i++) {
-					var adjs = viz.graph.getAdjacence(v[i][0], v[i][1]);
-					if(adjs) {
-						adjs[0].endAlpha = 0;
-						adjs[1].endAlpha = 0;
-					}
-				}
-				GPlot.animate(viz, $_.merge(options, {
-					modes: ['fade:vertex'],
-					onComplete: function() {
-						that.removeEdge(viz, v, { type: 'nothing' });
-						viz.compute('endPos');
-						GPlot.animate(viz, $_.merge(options, {
-							modes: ['linear']
-						}));
-					}
-				}));
-				break;
+            case 'fade:seq': case 'fade':
+                var GPlot = GraphPlot, that = this;
+                //set alpha to 0 for nodes to remove.
+                for(var i=0; i<v.length; i++) {
+                    var adjs = viz.graph.getAdjacence(v[i][0], v[i][1]);
+                    if(adjs) {
+                        adjs[0].endAlpha = 0;
+                        adjs[1].endAlpha = 0;
+                    }
+                }
+                GPlot.animate(viz, $_.merge(options, {
+                    modes: ['fade:vertex'],
+                    onComplete: function() {
+                        that.removeEdge(viz, v, {
+                            type: 'nothing'
+                        });
+                        viz.compute('endPos');
+                        GPlot.animate(viz, $_.merge(options, {
+                            modes: ['linear']
+                        }));
+                    }
+                }));
+                break;
 			
-			case 'fade:con':
-				var GPlot = GraphPlot, that = this;
-				//set alpha to 0 for nodes to remove. Tag them for being ignored when computing positions.
-				for(var i=0; i<v.length; i++) {
-					var adjs = viz.graph.getAdjacence(v[i][0], v[i][1]);
-					if(adjs) {
-						adjs[0].endAlpha = 0;
-						adjs[0].ignore = true;
-						adjs[1].endAlpha = 0;
-						adjs[1].ignore = true;
-					}
-				}
-				viz.compute('endPos');
-				GPlot.animate(viz, $_.merge(options, {
-					modes: ['fade:vertex', 'linear'],
-					onComplete: function() {
-						that.removeEdge(viz, v, { type: 'nothing' });
-					}
-				}));
-				break;
+            case 'fade:con':
+                var GPlot = GraphPlot, that = this;
+                //set alpha to 0 for nodes to remove. Tag them for being ignored when computing positions.
+                for(var i=0; i<v.length; i++) {
+                    var adjs = viz.graph.getAdjacence(v[i][0], v[i][1]);
+                    if(adjs) {
+                        adjs[0].endAlpha = 0;
+                        adjs[0].ignore = true;
+                        adjs[1].endAlpha = 0;
+                        adjs[1].ignore = true;
+                    }
+                }
+                viz.compute('endPos');
+                GPlot.animate(viz, $_.merge(options, {
+                    modes: ['fade:vertex', 'linear'],
+                    onComplete: function() {
+                        that.removeEdge(viz, v, {
+                            type: 'nothing'
+                        });
+                    }
+                }));
+                break;
 			
-			case 'iter':
-				var that = this, GPlot = GraphPlot;
-				GPlot.sequence(viz, {
-					condition: function() { return v.length != 0; },
-					step: function() { that.removeEdge(viz, v.shift(), { type: 'nothing' }); GPlot.clearLabels(viz); },
-					onComplete: function() { options.onComplete(); },
-					duration: Math.ceil(options.duration / v.length)
-				});
-				break;
+            case 'iter':
+                var that = this, GPlot = GraphPlot;
+                GPlot.sequence(viz, {
+                    condition: function() {
+                        return v.length != 0;
+                    },
+                    step: function() {
+                        that.removeEdge(viz, v.shift(), {
+                            type: 'nothing'
+                        }); GPlot.clearLabels(viz);
+                    },
+                    onComplete: function() {
+                        options.onComplete();
+                    },
+                    duration: Math.ceil(options.duration / v.length)
+                });
+                break;
 				
-			default: this.doError();
-		}
-	},
+            default: this.doError();
+        }
+    },
 	
-	/*
+    /*
 	   Method: sum
 	
 	   Adds a new graph to the visualization. The json graph (or tree) must at least have a common node with the current graph plotted by the visualization. The resulting graph can be defined as follows: <http://mathworld.wolfram.com/GraphSum.html>
@@ -1247,60 +1301,62 @@ var GraphOp = {
 	      opt - Animation options. It's an object with two properties: _type_, which can be _nothing_, _replot_, _fade:seq_,  or _fade:con_. The other property is the _duration_ in milliseconds. 
 	
 	*/
-	sum: function(viz, json, opt) {
-		var options = $_.merge(viz.controller, this.options, opt), root = viz.root;
-		viz.root = opt.id || viz.root;
-		switch(options.type) {
-			case 'nothing':
-				var graph = viz.construct(json), GUtil = GraphUtil;
-				GUtil.eachNode(graph, function(elem) {
-					GUtil.eachAdjacency(elem, function(adj) {
-						viz.graph.addAdjacence(adj.nodeFrom, adj.nodeTo, adj.data);
-					});
-				});
-				break;
+    sum: function(viz, json, opt) {
+        var options = $_.merge(viz.controller, this.options, opt), root = viz.root;
+        viz.root = opt.id || viz.root;
+        switch(options.type) {
+            case 'nothing':
+                var graph = viz.construct(json), GUtil = GraphUtil;
+                GUtil.eachNode(graph, function(elem) {
+                    GUtil.eachAdjacency(elem, function(adj) {
+                        viz.graph.addAdjacence(adj.nodeFrom, adj.nodeTo, adj.data);
+                    });
+                });
+                break;
 			
-			case 'replot':
-				this.sum(viz, json, { type: 'nothing' });
-				viz.refresh();
-				break;
+            case 'replot':
+                this.sum(viz, json, {
+                    type: 'nothing'
+                });
+                viz.refresh();
+                break;
 			
-			case 'fade:seq': case 'fade': case 'fade:con':
-				var GUtil = GraphUtil, GPlot = GraphPlot, that = this, graph = viz.construct(json);
-				//set alpha to 0 for nodes to add.
-				var fadeEdges = this.preprocessSum(viz, graph);
-				var modes = !fadeEdges? ['fade:nodes'] : ['fade:nodes', 'fade:vertex'];
-				viz.compute('endPos');
-				if(options.type != 'fade:con') {
-					GPlot.animate(viz, $_.merge(options, {
-						modes: ['linear'],
-						onComplete: function() {
-							GPlot.animate(viz, $_.merge(options, {
-								modes: modes,
-								onComplete: function() {
-									options.onComplete();
-								}
-							}));
-						}
-					}));
-				} else {
-					GUtil.eachNode(viz.graph, function(elem) {
-						if(elem.id != root && elem.pos.equals(Polar.KER)) elem.pos = elem.startPos = elem.endPos;
-					});
-					GPlot.animate(viz, $_.merge(options, {
-						modes: ['linear'].concat(modes),
-						onComplete: function() {
-							options.onComplete();
-						}
-					}));
-				}
-				break;
+            case 'fade:seq': case 'fade': case 'fade:con':
+                var GUtil = GraphUtil, GPlot = GraphPlot, that = this, graph = viz.construct(json);
+                //set alpha to 0 for nodes to add.
+                var fadeEdges = this.preprocessSum(viz, graph);
+                var modes = !fadeEdges? ['fade:nodes'] : ['fade:nodes', 'fade:vertex'];
+                viz.compute('endPos');
+                if(options.type != 'fade:con') {
+                    GPlot.animate(viz, $_.merge(options, {
+                        modes: ['linear'],
+                        onComplete: function() {
+                            GPlot.animate(viz, $_.merge(options, {
+                                modes: modes,
+                                onComplete: function() {
+                                    options.onComplete();
+                                }
+                            }));
+                        }
+                    }));
+                } else {
+                    GUtil.eachNode(viz.graph, function(elem) {
+                        if(elem.id != root && elem.pos.equals(Polar.KER)) elem.pos = elem.startPos = elem.endPos;
+                    });
+                    GPlot.animate(viz, $_.merge(options, {
+                        modes: ['linear'].concat(modes),
+                        onComplete: function() {
+                            options.onComplete();
+                        }
+                    }));
+                }
+                break;
 
-			default: this.doError();
-		}
-	},
+            default: this.doError();
+        }
+    },
 	
-	/*
+    /*
 	   Method: morph
 	
 	   This method will _morph_ the current visualized graph into the new _json_ representation passed in the method. Can also perform multiple animations. The _json_ object must at least have the root node in common with the current visualized graph.
@@ -1312,109 +1368,111 @@ var GraphOp = {
 	      opt - Animation options. It's an object with two properties: _type_, which can be _nothing_, _replot_, or _fade_. The other property is the _duration_ in milliseconds. 
 	
 	*/
-	morph: function(viz, json, opt) {
-		var options = $_.merge(viz.controller, this.options, opt), root = viz.root;
-		viz.root = opt.id || viz.root;
-		switch(options.type) {
-			case 'nothing':
-				var graph = viz.construct(json), GUtil = GraphUtil;
-				GUtil.eachNode(graph, function(elem) {
-					GUtil.eachAdjacency(elem, function(adj) {
-						viz.graph.addAdjacence(adj.nodeFrom, adj.nodeTo, adj.data);
-					});
-				});
-				GUtil.eachNode(viz.graph, function(elem) {
-					GUtil.eachAdjacency(elem, function(adj) {
-						if(!graph.getAdjacence(adj.nodeFrom.id, adj.nodeTo.id)) {
-							viz.graph.removeAdjacence(adj.nodeFrom.id, adj.nodeTo.id);
-						}
-						if(!viz.graph.hasNode(elem.id)) viz.graph.removeNode(elem.id);
-					});
-				});
+    morph: function(viz, json, opt) {
+        var options = $_.merge(viz.controller, this.options, opt), root = viz.root;
+        viz.root = opt.id || viz.root;
+        switch(options.type) {
+            case 'nothing':
+                var graph = viz.construct(json), GUtil = GraphUtil;
+                GUtil.eachNode(graph, function(elem) {
+                    GUtil.eachAdjacency(elem, function(adj) {
+                        viz.graph.addAdjacence(adj.nodeFrom, adj.nodeTo, adj.data);
+                    });
+                });
+                GUtil.eachNode(viz.graph, function(elem) {
+                    GUtil.eachAdjacency(elem, function(adj) {
+                        if(!graph.getAdjacence(adj.nodeFrom.id, adj.nodeTo.id)) {
+                            viz.graph.removeAdjacence(adj.nodeFrom.id, adj.nodeTo.id);
+                        }
+                        if(!viz.graph.hasNode(elem.id)) viz.graph.removeNode(elem.id);
+                    });
+                });
 				
-				break;
+                break;
 			
-			case 'replot':
-				this.morph(viz, json, { type: 'nothing' });
-				viz.refresh();
-				break;
+            case 'replot':
+                this.morph(viz, json, {
+                    type: 'nothing'
+                });
+                viz.refresh();
+                break;
 			
-			case 'fade:seq': case 'fade': case 'fade:con':
-				var GUtil = GraphUtil, GPlot = GraphPlot, that = this, graph = viz.construct(json);
-				//preprocessing for adding nodes.
-				var fadeEdges = this.preprocessSum(viz, graph);
-				//preprocessing for nodes to delete.
-				GUtil.eachNode(viz.graph, function(elem) {
-					if(!graph.hasNode(elem.id)) {
-						elem.alpha = 1; elem.startAlpha = 1; elem.endAlpha = 0; elem.ignore = true;
-					}
-				});	
-				GUtil.eachNode(viz.graph, function(elem) {
-					if(elem.ignore) return;
-					GUtil.eachAdjacency(elem, function(adj) {
-						if(adj.nodeFrom.ignore || adj.nodeTo.ignore) return;
-						var nodeFrom = graph.getNode(adj.nodeFrom.id);
-						var nodeTo = graph.getNode(adj.nodeTo.id);
-						if(!nodeFrom.adjacentTo(nodeTo)) {
-							var adjs = viz.graph.getAdjacence(nodeFrom.id, nodeTo.id);
-							fadeEdges = true;
-							adjs[0].alpha = 1; adjs[0].startAlpha = 1; adjs[0].endAlpha = 0; adjs[0].ignore = true;
-							adjs[1].alpha = 1; adjs[1].startAlpha = 1; adjs[1].endAlpha = 0; adjs[1].ignore = true;
-						}
-					});
-				});	
-				var modes = !fadeEdges? ['fade:nodes'] : ['fade:nodes', 'fade:vertex'];
-				viz.compute('endPos');
-				GUtil.eachNode(viz.graph, function(elem) {
-					if(elem.id != root && elem.pos.equals(Polar.KER)) elem.pos = elem.startPos = elem.endPos;
-				});
-				GPlot.animate(viz, $_.merge(options, {
-					modes: ['polar'].concat(modes),
-					onComplete: function() {
-						GUtil.eachNode(viz.graph, function(elem) {
-							if(elem.ignore) viz.graph.removeNode(elem.id);
-						});
-						GUtil.eachNode(viz.graph, function(elem) {
-							GUtil.eachAdjacency(elem, function(adj) {
-								if(adj.ignore) viz.graph.removeAdjacence(adj.nodeFrom.id, adj.nodeTo.id);
-							});
-						});
-						options.onComplete();
-					}
-				}));
-				break;
+            case 'fade:seq': case 'fade': case 'fade:con':
+                var GUtil = GraphUtil, GPlot = GraphPlot, that = this, graph = viz.construct(json);
+                //preprocessing for adding nodes.
+                var fadeEdges = this.preprocessSum(viz, graph);
+                //preprocessing for nodes to delete.
+                GUtil.eachNode(viz.graph, function(elem) {
+                    if(!graph.hasNode(elem.id)) {
+                        elem.alpha = 1; elem.startAlpha = 1; elem.endAlpha = 0; elem.ignore = true;
+                    }
+                });
+                GUtil.eachNode(viz.graph, function(elem) {
+                    if(elem.ignore) return;
+                    GUtil.eachAdjacency(elem, function(adj) {
+                        if(adj.nodeFrom.ignore || adj.nodeTo.ignore) return;
+                        var nodeFrom = graph.getNode(adj.nodeFrom.id);
+                        var nodeTo = graph.getNode(adj.nodeTo.id);
+                        if(!nodeFrom.adjacentTo(nodeTo)) {
+                            var adjs = viz.graph.getAdjacence(nodeFrom.id, nodeTo.id);
+                            fadeEdges = true;
+                            adjs[0].alpha = 1; adjs[0].startAlpha = 1; adjs[0].endAlpha = 0; adjs[0].ignore = true;
+                            adjs[1].alpha = 1; adjs[1].startAlpha = 1; adjs[1].endAlpha = 0; adjs[1].ignore = true;
+                        }
+                    });
+                });
+                var modes = !fadeEdges? ['fade:nodes'] : ['fade:nodes', 'fade:vertex'];
+                viz.compute('endPos');
+                GUtil.eachNode(viz.graph, function(elem) {
+                    if(elem.id != root && elem.pos.equals(Polar.KER)) elem.pos = elem.startPos = elem.endPos;
+                });
+                GPlot.animate(viz, $_.merge(options, {
+                    modes: ['polar'].concat(modes),
+                    onComplete: function() {
+                        GUtil.eachNode(viz.graph, function(elem) {
+                            if(elem.ignore) viz.graph.removeNode(elem.id);
+                        });
+                        GUtil.eachNode(viz.graph, function(elem) {
+                            GUtil.eachAdjacency(elem, function(adj) {
+                                if(adj.ignore) viz.graph.removeAdjacence(adj.nodeFrom.id, adj.nodeTo.id);
+                            });
+                        });
+                        options.onComplete();
+                    }
+                }));
+                break;
 
-			default: this.doError();
-		}
-	},
+            default: this.doError();
+        }
+    },
 	
-	preprocessSum: function(viz, graph) {
-		var GUtil = GraphUtil;
-		GUtil.eachNode(graph, function(elem) {
-			if(!viz.graph.hasNode(elem.id)) {
-				viz.graph.addNode(elem);
-				var n = viz.graph.getNode(elem.id);
-				n.alpha = 0; n.startAlpha = 0; n.endAlpha = 1;
-			}
-		});	
-		var fadeEdges = false;
-		GUtil.eachNode(graph, function(elem) {
-			GUtil.eachAdjacency(elem, function(adj) {
-				var nodeFrom = viz.graph.getNode(adj.nodeFrom.id);
-				var nodeTo = viz.graph.getNode(adj.nodeTo.id);
-				if(!nodeFrom.adjacentTo(nodeTo)) {
-					var adjs = viz.graph.addAdjacence(nodeFrom, nodeTo, adj.data);
-					if(nodeFrom.startAlpha == nodeFrom.endAlpha 
-					&& nodeTo.startAlpha == nodeTo.endAlpha) {
-						fadeEdges = true;
-						adjs[0].alpha = 0; adjs[0].startAlpha = 0; adjs[0].endAlpha = 1;
-						adjs[1].alpha = 0; adjs[1].startAlpha = 0; adjs[1].endAlpha = 1;
-					} 
-				}
-			});
-		});	
-		return fadeEdges;
-	}
+    preprocessSum: function(viz, graph) {
+        var GUtil = GraphUtil;
+        GUtil.eachNode(graph, function(elem) {
+            if(!viz.graph.hasNode(elem.id)) {
+                viz.graph.addNode(elem);
+                var n = viz.graph.getNode(elem.id);
+                n.alpha = 0; n.startAlpha = 0; n.endAlpha = 1;
+            }
+        });
+        var fadeEdges = false;
+        GUtil.eachNode(graph, function(elem) {
+            GUtil.eachAdjacency(elem, function(adj) {
+                var nodeFrom = viz.graph.getNode(adj.nodeFrom.id);
+                var nodeTo = viz.graph.getNode(adj.nodeTo.id);
+                if(!nodeFrom.adjacentTo(nodeTo)) {
+                    var adjs = viz.graph.addAdjacence(nodeFrom, nodeTo, adj.data);
+                    if(nodeFrom.startAlpha == nodeFrom.endAlpha
+                        && nodeTo.startAlpha == nodeTo.endAlpha) {
+                        fadeEdges = true;
+                        adjs[0].alpha = 0; adjs[0].startAlpha = 0; adjs[0].endAlpha = 1;
+                        adjs[1].alpha = 0; adjs[1].startAlpha = 0; adjs[1].endAlpha = 1;
+                    }
+                }
+            });
+        });
+        return fadeEdges;
+    }
 };
 
 
@@ -1425,280 +1483,282 @@ var GraphOp = {
 */
 var GraphPlot = {
 
-	Interpolator: {
-		'polar': function(elem, delta) {
-			var from = elem.startPos;
-			var to = elem.endPos;
-			elem.pos = to.interpolate(from, delta);
-		},
+    Interpolator: {
+        'polar': function(elem, delta) {
+            var from = elem.startPos;
+            var to = elem.endPos;
+            elem.pos = to.interpolate(from, delta);
+        },
 		
-		'linear': function(elem, delta) {
-			var from = elem.startPos.toComplex();
-			var to = elem.endPos.toComplex();
-			elem.pos = ((to.$add(from.scale(-1))).$scale(delta).$add(from)).toPolar();
-		},
+        'linear': function(elem, delta) {
+            var from = elem.startPos.toComplex();
+            var to = elem.endPos.toComplex();
+            elem.pos = ((to.$add(from.scale(-1))).$scale(delta).$add(from)).toPolar();
+        },
 		
-		'fade:nodes': function(elem, delta) {
-			if(elem.endAlpha != elem.alpha) {
-				var from = elem.startAlpha;
-				var to   = elem.endAlpha;
-				elem.alpha = from + (to - from) * delta;
-			}
-		},
+        'fade:nodes': function(elem, delta) {
+            if(elem.endAlpha != elem.alpha) {
+                var from = elem.startAlpha;
+                var to   = elem.endAlpha;
+                elem.alpha = from + (to - from) * delta;
+            }
+        },
 		
-		'fade:vertex': function(elem, delta) {
-			var adjs = elem.adjacencies;
-			for(var id in adjs) this['fade:nodes'](adjs[id], delta);
-		}
-	},
+        'fade:vertex': function(elem, delta) {
+            var adjs = elem.adjacencies;
+            for(var id in adjs) this['fade:nodes'](adjs[id], delta);
+        }
+    },
 
-	//Property: labelsHidden
-	//A flag value indicating if node labels are being displayed or not.
-	labelsHidden: false,
-	//Property: labelContainer
-	//Label DOM element
-	labelContainer: false,
-	//Property: labels
-	//Label DOM elements hash.
-	labels: {},
+    //Property: labelsHidden
+    //A flag value indicating if node labels are being displayed or not.
+    labelsHidden: false,
+    //Property: labelContainer
+    //Label DOM element
+    labelContainer: false,
+    //Property: labels
+    //Label DOM elements hash.
+    labels: {},
 
-	/*
+    /*
 	   Method: getLabelContainer
 	
 	   Lazy fetcher for the label container.
 	*/
-	getLabelContainer: function() {
-		return this.labelContainer? this.labelContainer : this.labelContainer = document.getElementById(Config.labelContainer);
-	},
+    getLabelContainer: function() {
+        return this.labelContainer? this.labelContainer : this.labelContainer = document.getElementById(Config.labelContainer);
+    },
 	
-	/*
+    /*
 	   Method: getLabel
 	
 	   Lazy fetcher for the label DOM element.
 	*/
-	getLabel: function(id) {
-		return (id in this.labels && this.labels[id] != null)? this.labels[id] : this.labels[id] = document.getElementById(id);
-	},
+    getLabel: function(id) {
+        return (id in this.labels && this.labels[id] != null)? this.labels[id] : this.labels[id] = document.getElementById(id);
+    },
 	
-	/*
+    /*
 	   Method: hideLabels
 	
 	   Hides all labels.
 	*/
-	hideLabels: function (hide) {
-		var container = this.getLabelContainer();
-		if(hide) container.style.display = 'none';
-		else container.style.display = '';
-		this.labelsHidden = hide;
-	},
+    hideLabels: function (hide) {
+        var container = this.getLabelContainer();
+        if(hide) container.style.display = 'none';
+        else container.style.display = '';
+        this.labelsHidden = hide;
+    },
 
-	/*
+    /*
 	   Method: clearLabels
 	
 	   Clears the label container.
 	*/
-	clearLabels: function(viz) {
-		for(var id in this.labels) 
-			if(!viz.graph.hasNode(id)) {
-				this.disposeLabel(id);
-				delete this.labels[id];
-			}
-	},
+    clearLabels: function(viz) {
+        for(var id in this.labels)
+            if(!viz.graph.hasNode(id)) {
+                this.disposeLabel(id);
+                delete this.labels[id];
+            }
+    },
 	
-	/*
+    /*
 	   Method: disposeLabel
 	
 	   Removes a label.
 	*/
-	disposeLabel: function(id) {
-		var elem = this.getLabel(id);
-		if(elem && elem.parentNode) {
-			elem.parentNode.removeChild(elem);
-		}  
-	},
+    disposeLabel: function(id) {
+        var elem = this.getLabel(id);
+        if(elem && elem.parentNode) {
+            elem.parentNode.removeChild(elem);
+        }
+    },
 	
-	/*
+    /*
 	   Method: animate
 	
 	   Animates the graph.
 	*/
-	animate: function(viz, opt) {
-		var that = this,
-		GUtil = GraphUtil,
-		Anim = Animation,
-		duration = opt.duration || Anim.duration,
-		fps = opt.fps || Anim.fps;
-		//Should be changed eventually, when Animation becomes a class.
-		var prevDuration = Anim.duration, prevFps = Anim.fps;
+    animate: function(viz, opt) {
+        var that = this,
+        GUtil = GraphUtil,
+        Anim = Animation,
+        duration = opt.duration || Anim.duration,
+        fps = opt.fps || Anim.fps;
+        //Should be changed eventually, when Animation becomes a class.
+        var prevDuration = Anim.duration, prevFps = Anim.fps;
 		
-		Anim.duration = duration;
-		Anim.fps = fps;
+        Anim.duration = duration;
+        Anim.fps = fps;
 		
-		if(opt.hideLabels) this.hideLabels(true);
-		var animationController = {
-			compute: function(delta) {
-				GUtil.eachNode(viz.graph, function(node) { 
-					for(var i=0; i<opt.modes.length; i++) {
-						that.Interpolator[opt.modes[i]](node, delta);
-					}
-				});
-				that.plot(viz, opt);
-			},
+        if(opt.hideLabels) this.hideLabels(true);
+        var animationController = {
+            compute: function(delta) {
+                GUtil.eachNode(viz.graph, function(node) {
+                    for(var i=0; i<opt.modes.length; i++) {
+                        that.Interpolator[opt.modes[i]](node, delta);
+                    }
+                });
+                that.plot(viz, opt);
+            },
 
-			complete: function() {
-				GUtil.eachNode(viz.graph, function(node) { 
-					node.startPos = node.pos;
-					node.startAlpha = node.alpha;
-				});
-				if(opt.hideLabels) that.hideLabels(false);
-				that.plot(viz, opt);
-				Anim.duration = prevDuration;
-				Anim.fps = prevFps;
-				opt.onComplete();
-				opt.onAfterCompute();
-			}		
-		};
-		Anim.controller = animationController;
-		Anim.start();
-	},
+            complete: function() {
+                GUtil.eachNode(viz.graph, function(node) {
+                    node.startPos = node.pos;
+                    node.startAlpha = node.alpha;
+                });
+                if(opt.hideLabels) that.hideLabels(false);
+                that.plot(viz, opt);
+                Anim.duration = prevDuration;
+                Anim.fps = prevFps;
+                opt.onComplete();
+                opt.onAfterCompute();
+            }
+        };
+        Anim.controller = animationController;
+        Anim.start();
+    },
 
 
-	/*
+    /*
 	   Method: sequence
 	
 	   Iteratively performs an action while refreshing the state of the visualization.
 	*/
-	sequence: function(viz, options) {
-		options = $_.merge({
-			condition: function() { return false; },
-			step: $_.empty,
-			onComplete: $_.empty,
-			duration: 200
-		}, options);
+    sequence: function(viz, options) {
+        options = $_.merge({
+            condition: function() {
+                return false;
+            },
+            step: $_.empty,
+            onComplete: $_.empty,
+            duration: 200
+        }, options);
 
-		var interval = setInterval(function() {
-			if(options.condition()) {
-				options.step();
-			} else {
-				clearInterval(interval);
-				options.onComplete();
-			}
-			viz.refresh();
-		}, options.duration);
-	},
+        var interval = setInterval(function() {
+            if(options.condition()) {
+                options.step();
+            } else {
+                clearInterval(interval);
+                options.onComplete();
+            }
+            viz.refresh();
+        }, options.duration);
+    },
 
-	/*
+    /*
 	   Method: plot
 	
 	   Plots a Graph.
 	*/
-	plot: function(viz, opt) {
-		var aGraph = viz.graph, canvas = viz.canvas, id = viz.root;
-		var that = this, ctx = canvas.getCtx(), GUtil = GraphUtil;
-		canvas.clear();
-		var T = !!aGraph.getNode(id).visited;
-		GUtil.eachNode(aGraph, function(node) {
-			GUtil.eachAdjacency(node, function(adj) {
-				if(!!adj.nodeTo.visited === T) {
-					opt.onBeforePlotLine(adj);
-					ctx.save();
-					ctx.globalAlpha = Math.min(Math.min(node.alpha, adj.nodeTo.alpha), adj.alpha);
-					that.plotLine(adj, canvas);
-					ctx.restore();
-					opt.onAfterPlotLine(adj);
-				}
-			});
-			ctx.save();
-			ctx.globalAlpha = node.alpha;
-			opt.onBeforePlotNode(node);
-			that.plotNode(node, canvas);
-			opt.onAfterPlotNode(node);
-	 		if(!that.labelsHidden && ctx.globalAlpha >= .95) that.plotLabel(canvas, node, opt);
-	 		else if(!that.labelsHidden && ctx.globalAlpha < .95) that.hideLabel(node);
-			ctx.restore();
-			node.visited = !T;
-		});
-	},
+    plot: function(viz, opt) {
+        var aGraph = viz.graph, canvas = viz.canvas, id = viz.root;
+        var that = this, ctx = canvas.getCtx(), GUtil = GraphUtil;
+        canvas.clear();
+        var T = !!aGraph.getNode(id).visited;
+        GUtil.eachNode(aGraph, function(node) {
+            GUtil.eachAdjacency(node, function(adj) {
+                if(!!adj.nodeTo.visited === T) {
+                    opt.onBeforePlotLine(adj);
+                    ctx.save();
+                    ctx.globalAlpha = Math.min(Math.min(node.alpha, adj.nodeTo.alpha), adj.alpha);
+                    that.plotLine(adj, canvas);
+                    ctx.restore();
+                    opt.onAfterPlotLine(adj);
+                }
+            });
+            ctx.save();
+            ctx.globalAlpha = node.alpha;
+            opt.onBeforePlotNode(node);
+            that.plotNode(node, canvas);
+            opt.onAfterPlotNode(node);
+            if(!that.labelsHidden && ctx.globalAlpha >= .95) that.plotLabel(canvas, node, opt);
+            else if(!that.labelsHidden && ctx.globalAlpha < .95) that.hideLabel(node);
+            ctx.restore();
+            node.visited = !T;
+        });
+    },
 	
 	
-	/*
+    /*
 	   Method: plotNode
 	
 	   Plots a graph node.
 	*/
-	plotNode: function(node, canvas) {
-		var pos = node.pos.toComplex();
-		canvas.path('fill', function(context) {
-			context.arc(pos.x, pos.y, node._radius, 0, Math.PI*2, true);			
-		});
-	},
+    plotNode: function(node, canvas) {
+        var pos = node.pos.toComplex();
+        canvas.path('fill', function(context) {
+            context.arc(pos.x, pos.y, node._radius, 0, Math.PI*2, true);
+        });
+    },
 	
-	/*
+    /*
 	   Method: plotLine
 	
 	   Plots a line connecting _node_ and _child_ nodes.
 	*/
-	plotLine: function(adj, canvas) {
-		var node = adj.nodeFrom, child = adj.nodeTo;
-		var pos = node.pos.toComplex();
-		var posChild = child.pos.toComplex();
-		canvas.path('stroke', function(context) {
-			context.moveTo(pos.x, pos.y);
-		  	context.lineTo(posChild.x, posChild.y);
-		});
-	},
+    plotLine: function(adj, canvas) {
+        var node = adj.nodeFrom, child = adj.nodeTo;
+        var pos = node.pos.toComplex();
+        var posChild = child.pos.toComplex();
+        canvas.path('stroke', function(context) {
+            context.moveTo(pos.x, pos.y);
+            context.lineTo(posChild.x, posChild.y);
+        });
+    },
 	
-	/*
+    /*
 	   Method: hideLabel
 	
 	   Hides a label having _node.id_ as id.
 	*/
-	hideLabel: function(node) {
-		var n; if(n = document.getElementById(node.id)) n.style.display = "none";
-	},
+    hideLabel: function(node) {
+        var n; if(n = document.getElementById(node.id)) n.style.display = "none";
+    },
 	
-	/*
+    /*
 	   Method: plotLabel
 	
 	   Plots a label for a given node.
 	*/
-	plotLabel: function(canvas, node, controller) {
-		var size = node._radius, id = node.id, tag = this.getLabel(id);
-		if(!tag && !(tag = document.getElementById(id))) {
-			tag = document.createElement('div');
-			var container = this.getLabelContainer();
-			container.appendChild(tag);
-			tag.id = id;
-			tag.className = 'node';
-			tag.style.position = 'absolute';
-			controller.onCreateLabel(tag, node);
-		}
-		var pos = node.pos.toComplex();
-		var radius= canvas.getSize();
-		var labelPos= {
-			x: Math.round(pos.x + radius.width/2 - size /2),
-			y: Math.round(pos.y + radius.height/2 - size /2)
-		};
-		var style = tag.style;
-		style.width = size + 'px';
-		style.height = size + 'px';
-		style.left = labelPos.x + 'px';
-		style.top = labelPos.y  + 'px';
-		style.display = this.fitsInCanvas(labelPos, canvas)? '' : 'none';
-		controller.onPlaceLabel(tag, node);
-	},
+    plotLabel: function(canvas, node, controller) {
+        var size = node._radius, id = node.id, tag = this.getLabel(id);
+        if(!tag && !(tag = document.getElementById(id))) {
+            tag = document.createElement('div');
+            var container = this.getLabelContainer();
+            container.appendChild(tag);
+            tag.id = id;
+            tag.className = 'node';
+            tag.style.position = 'absolute';
+            controller.onCreateLabel(tag, node);
+        }
+        var pos = node.pos.toComplex();
+        var radius= canvas.getSize();
+        var labelPos= {
+            x: Math.round(pos.x + radius.width/2 - size /2),
+            y: Math.round(pos.y + radius.height/2 - size /2)
+        };
+        var style = tag.style;
+        style.width = size + 'px';
+        style.height = size + 'px';
+        style.left = labelPos.x + 'px';
+        style.top = labelPos.y  + 'px';
+        style.display = this.fitsInCanvas(labelPos, canvas)? '' : 'none';
+        controller.onPlaceLabel(tag, node);
+    },
 	
-	/*
+    /*
 	   Method: fitsInCanvas
 	
 	   Returns _true_ or _false_ if the label for the node is contained on the canvas dom element or not.
 	*/
-	fitsInCanvas: function(pos, canvas) {
-		var size = canvas.getSize();
-		if(pos.x >= size.width || pos.x < 0 
-			|| pos.y >= size.height || pos.y < 0) return false;
-		return true;					
-	}
+    fitsInCanvas: function(pos, canvas) {
+        var size = canvas.getSize();
+        if(pos.x >= size.width || pos.x < 0
+            || pos.y >= size.height || pos.y < 0) return false;
+        return true;
+    }
 };
 
 /*
@@ -1739,222 +1799,230 @@ var GraphPlot = {
     controller - _optional_ a RGraph controller <http://blog.thejit.org/?p=8>
 */
 var RGraph = function(canvas, controller) {
-	var innerController = {
-		onBeforeCompute: $_.empty,
-		onAfterCompute:  $_.empty,
-		onCreateLabel:   $_.empty,
-		onPlaceLabel:    $_.empty,
-		onComplete:      $_.empty,
-		onBeforePlotLine: $_.empty,
-		onAfterPlotLine: $_.empty,
-		onBeforePlotNode: $_.empty,
-		onAfterPlotNode: $_.empty,
-		request:         false
-	};
-	this.controller = $_.merge(innerController, controller);
-	this.graph = new Graph();
-	this.json = null;
-	this.canvas = canvas;
-	this.root = null;
-	this.busy = false;
-	this.parent = false;
+    var innerController = {
+        onBeforeCompute: $_.empty,
+        onAfterCompute:  $_.empty,
+        onCreateLabel:   $_.empty,
+        onPlaceLabel:    $_.empty,
+        onComplete:      $_.empty,
+        onBeforePlotLine: $_.empty,
+        onAfterPlotLine: $_.empty,
+        onBeforePlotNode: $_.empty,
+        onAfterPlotNode: $_.empty,
+        request:         false
+    };
+    this.controller = $_.merge(innerController, controller);
+    this.graph = new Graph();
+    this.json = null;
+    this.canvas = canvas;
+    this.root = null;
+    this.busy = false;
+    this.parent = false;
 	
-	Animation.duration = Config.animationTime;
-	Animation.fps = Config.fps;
-	Config.labelContainer = canvas.id + "-label";
+    Animation.duration = Config.animationTime;
+    Animation.fps = Config.fps;
+    Config.labelContainer = canvas.id + "-label";
 };
 
 RGraph.prototype = {
 	
 	
-	construct: function(json) {
-		var isGraph = $_.isArray(json);
-		var ans = new Graph();
-		if(!isGraph) 
-			//make tree
-			(function (ans, json) {
-				ans.addNode(json);
-				for(var i=0, ch = json.children; i<ch.length; i++) {
-					ans.addAdjacence(json, ch[i]);
-					arguments.callee(ans, ch[i]);
-				}
-			})(ans, json);
-		else
-			//make graph
-			(function (ans, json) {
-				var getNode = function(id) {
-					for(var w=0; w<json.length; w++) if(json[w].id == id) return json[w];
-				};
-				for(var i=0; i<json.length; i++) {
-					ans.addNode(json[i]);
-					for(var j=0, adj = json[i].adjacencies; j<adj.length; j++) {
-						var node = adj[j], data;
-						if(typeof adj[j] != 'string') {
-							data = node.data;
-							node = node.nodeTo;
-						}
-						ans.addAdjacence(json[i], getNode(node), data);
-					}
-				}
-			})(ans, json);
+    construct: function(json) {
+        var isGraph = $_.isArray(json);
+        var ans = new Graph();
+        if(!isGraph)
+            //make tree
+            (function (ans, json) {
+                ans.addNode(json);
+                for(var i=0, ch = json.children; i<ch.length; i++) {
+                    ans.addAdjacence(json, ch[i]);
+                    arguments.callee(ans, ch[i]);
+                }
+            })(ans, json);
+        else
+            //make graph
+            (function (ans, json) {
+                var getNode = function(id) {
+                    for(var w=0; w<json.length; w++){
+                        if(json[w].id == id) {
+                            return json[w];
+                        }
+                    }
+                };
+                for(var i=0; i<json.length; i++) {
+                    ans.addNode(json[i]);
+                    for(var j=0, adj = json[i].adjacencies; j<adj.length; j++) {
+                        var node = adj[j], data;
+                        if(typeof adj[j] != 'string') {
+                            data = node.data;
+                            node = node.nodeTo;
+                        }
+                        ans.addAdjacence(json[i], getNode(node), data);
+                    }
+                }
+            })(ans, json);
 
-		return ans;
-	},
+        return ans;
+    },
 	
-	/*
+    /*
 	 Method: loadTree
 	
 	 Loads a Graph from a json tree object <http://blog.thejit.org>
 	 
 	*/
-	loadTree: function(json) {
-		this.graph = this.construct(json);
-	},
+    loadTree: function(json) {
+        this.graph = this.construct(json);
+    },
 
-	/*
+    /*
 	 Method: loadGraph
 	
 	 Loads a Graph from a json graph object <http://blog.thejit.org>
 	 
 	*/
-	loadGraph: function(json) {
-		this.graph = this.construct(json);
-	},
+    loadGraph: function(json) {
+        this.graph = this.construct(json);
+    },
 	
-	/*
+    /*
 	 Method: refresh
 	
 	 Computes positions and then plots.
 	 
 	*/
-	refresh: function() {
-		this.compute();
-		this.plot();
-	},
+    refresh: function() {
+        this.compute();
+        this.plot();
+    },
 	
-  /*
+    /*
 	 Method: flagRoot
 	
 	 Flags a node specified by _id_ as root.
 	*/
-	flagRoot: function(id) {
-		this.unflagRoot();
-		this.graph.nodes[id]._root = true;
-	},
+    flagRoot: function(id) {
+        this.unflagRoot();
+        this.graph.nodes[id]._root = true;
+    },
 
-	/*
+    /*
 	 Method: unflagRoot
 	
 	 Unflags all nodes.
 	*/
-	unflagRoot: function() {
-		GraphUtil.eachNode(this.graph, function(elem) {elem._root = false;});
-	},
+    unflagRoot: function() {
+        GraphUtil.eachNode(this.graph, function(elem) {
+            elem._root = false;
+        });
+    },
 
-	/*
+    /*
 	 Method: getRoot
 	
 	 Returns the node flagged as root.
 	*/
-	getRoot: function() {
-		var root = false;
-		GraphUtil.eachNode(this.graph, function(elem){ if(elem._root) root = elem; });
-		return root;
-	},
+    getRoot: function() {
+        var root = false;
+        GraphUtil.eachNode(this.graph, function(elem){
+            if(elem._root) root = elem;
+        });
+        return root;
+    },
 	
-	/*
+    /*
 	 Method: loadTreeFromJSON
 	
 	 Loads a RGraph from a _json_ object <http://blog.thejit.org>
 	*/
-	loadTreeFromJSON: function(json) {
-		this.json = json;
-		this.loadTree(json);
-		this.root = json.id;
-	},
+    loadTreeFromJSON: function(json) {
+        this.json = json;
+        this.loadTree(json);
+        this.root = json.id;
+    },
 	
-	/*
+    /*
 	 Method: loadGraphFromJSON
 	
 	 Loads a RGraph from a _json_ object <http://blog.thejit.org>
 	*/
-	loadGraphFromJSON: function(json, i) {
-		this.json = json;
-		this.loadGraph(json);
-		this.root = json[i? i : 0].id;
-	},
+    loadGraphFromJSON: function(json, i) {
+        this.json = json;
+        this.loadGraph(json);
+        this.root = json[i? i : 0].id;
+    },
 	
 	
-	/*
+    /*
 	 Method: plot
 	
 	 Plots the RGraph
 	*/
-	plot: function() {
-		GraphPlot.plot(this, this.controller);
-	},
+    plot: function() {
+        GraphPlot.plot(this, this.controller);
+    },
 	
-	/*
+    /*
 	 Method: compute
 	
 	 Computes the graph nodes positions and stores this positions on _property_.
 	*/
-	compute: function(property) {
-		var prop = property || ['pos', 'startPos', 'endPos'];
-		var node = this.graph.getNode(this.root);
-		node._depth = 0;
-		this.flagRoot(this.root);
-		GraphUtil.computeLevels(this.graph, this.root, "ignore");
-		this.computeAngularWidths();
-		this.computePositions(prop);
-	},
+    compute: function(property) {
+        var prop = property || ['pos', 'startPos', 'endPos'];
+        var node = this.graph.getNode(this.root);
+        node._depth = 0;
+        this.flagRoot(this.root);
+        GraphUtil.computeLevels(this.graph, this.root, "ignore");
+        this.computeAngularWidths();
+        this.computePositions(prop);
+    },
 	
-	/*
+    /*
 	 Method: computePositions
 	
 	 Performs the main algorithm for computing node positions.
 	*/
-	computePositions: function(property) {
-		var propArray = (typeof property == 'array' || typeof property == 'object')? property : [property];
-		var aGraph = this.graph;
-		var GUtil = GraphUtil;
-		var root = this.graph.getNode(this.root);
-		var parent = this.parent;
+    computePositions: function(property) {
+        var propArray = (typeof property == 'array' || typeof property == 'object')? property : [property];
+        var aGraph = this.graph;
+        var GUtil = GraphUtil;
+        var root = this.graph.getNode(this.root);
+        var parent = this.parent;
 
-		for(var i=0; i<propArray.length; i++)
-			root[propArray[i]] = new Polar(0, 0);
+        for(var i=0; i<propArray.length; i++)
+            root[propArray[i]] = new Polar(0, 0);
 		
-		root.angleSpan = {
-			begin: 0,
-			end: 2 * Math.PI
-		};
-		root._rel = 1;
+        root.angleSpan = {
+            begin: 0,
+            end: 2 * Math.PI
+        };
+        root._rel = 1;
 		
-		GUtil.eachBFS(this.graph, this.root, function (elem) {
-			var angleSpan = elem.angleSpan.end - elem.angleSpan.begin;
-			var rho = (elem._depth + 1) * Config.levelDistance;
-			var angleInit = elem.angleSpan.begin;
-			var totalAngularWidths = (function (element){
-				var total = 0;
-				GUtil.eachSubnode(element, function(sib) {
-					total += sib._treeAngularWidth;
-				}, "ignore");
-				return total;
-			})(elem);
+        GUtil.eachBFS(this.graph, this.root, function (elem) {
+            var angleSpan = elem.angleSpan.end - elem.angleSpan.begin;
+            var rho = (elem._depth + 1) * Config.levelDistance;
+            var angleInit = elem.angleSpan.begin;
+            var totalAngularWidths = (function (element){
+                var total = 0;
+                GUtil.eachSubnode(element, function(sib) {
+                    total += sib._treeAngularWidth;
+                }, "ignore");
+                return total;
+            })(elem);
 			
-			var subnodes = [];
-			GUtil.eachSubnode(elem, function(ch) {
-				subnodes.push(ch);
-			}, "ignore");
+            var subnodes = [];
+            GUtil.eachSubnode(elem, function(ch) {
+                subnodes.push(ch);
+            }, "ignore");
 			
             if(parent && parent.id == elem.id && subnodes.length > 0 && subnodes[0].dist) {
-				subnodes.sort(function(a, b) {
-					return  (a.dist >= b.dist) - (a.dist <= b.dist);
-				});
-			}
-			for(var k=0; k < subnodes.length; k++) {
+                subnodes.sort(function(a, b) {
+                    return  (a.dist >= b.dist) - (a.dist <= b.dist);
+                });
+            }
+            for(var k=0; k < subnodes.length; k++) {
                 var child = subnodes[k];
-				if(!child._flag) {
+                if(!child._flag) {
                     child._rel = child._treeAngularWidth / totalAngularWidths;
                     var angleProportion = child._rel * angleSpan;
                     var theta = angleInit + angleProportion / 2;
@@ -1968,138 +2036,150 @@ RGraph.prototype = {
                     };
                     angleInit += angleProportion;
                 }
-			}
-		}, "ignore");
-	},
+            }
+        }, "ignore");
+    },
 
 
 	
-	/*
+    /*
 	 Method: setAngularWidthForNodes
 	
 	 Sets nodes angular widths.
 	*/
-	setAngularWidthForNodes: function() {
-		var rVal = Config.nodeRangeValues, rDiam = Config.nodeRangeDiameters, nr = Config.nodeRadius, allow = Config.allowVariableNodeDiameters; 
-		var diam = function(value) { return (((rDiam.max - rDiam.min)/(rVal.max - rVal.min)) * (value - rVal.min) + rDiam.min) };
-		GraphUtil.eachBFS(this.graph, this.root, function(elem, i) {
-			var dataValue = (allow && elem.data && elem.data.length > 0)? elem.data[0].value : nr;
-			var diamValue = diam(dataValue);
-			var rho = Config.levelDistance * i;
-			elem._angularWidth = diamValue / rho;
-			elem._radius = allow? diamValue / 2 : nr;
-		}, "ignore");
-	},
+    setAngularWidthForNodes: function() {
+        var rVal = Config.nodeRangeValues, rDiam = Config.nodeRangeDiameters, nr = Config.nodeRadius, allow = Config.allowVariableNodeDiameters;
+        var diam = function(value) {
+            return (((rDiam.max - rDiam.min)/(rVal.max - rVal.min)) * (value - rVal.min) + rDiam.min)
+        };
+        GraphUtil.eachBFS(this.graph, this.root, function(elem, i) {
+            var dataValue = (allow && elem.data && elem.data.length > 0)? elem.data[0].value : nr;
+            var diamValue = diam(dataValue);
+            var rho = Config.levelDistance * i;
+            elem._angularWidth = diamValue / rho;
+            elem._radius = allow? diamValue / 2 : nr;
+        }, "ignore");
+    },
 	
-	/*
+    /*
 	 Method: setSubtreesAngularWidths
 	
 	 Sets subtrees angular widths.
 	*/
-	setSubtreesAngularWidth: function() {
-		var that = this;
-		GraphUtil.eachNode(this.graph, function(elem) {
-			that.setSubtreeAngularWidth(elem);
-		}, "ignore");
-	},
+    setSubtreesAngularWidth: function() {
+        var that = this;
+        GraphUtil.eachNode(this.graph, function(elem) {
+            that.setSubtreeAngularWidth(elem);
+        }, "ignore");
+    },
 	
-	/*
+    /*
 	 Method: setSubtreeAngularWidth
 	
 	 Sets the angular width for a subtree.
 	*/
-	setSubtreeAngularWidth: function(elem) {
-		var that = this, nodeAW = elem._angularWidth, sumAW = 0;
-		GraphUtil.eachSubnode(elem, function(child) {
-			that.setSubtreeAngularWidth(child);
-			sumAW += child._treeAngularWidth;
-		}, "ignore");
-		elem._treeAngularWidth = Math.max(nodeAW, sumAW);
-	},
+    setSubtreeAngularWidth: function(elem) {
+        var that = this, nodeAW = elem._angularWidth, sumAW = 0;
+        GraphUtil.eachSubnode(elem, function(child) {
+            that.setSubtreeAngularWidth(child);
+            sumAW += child._treeAngularWidth;
+        }, "ignore");
+        elem._treeAngularWidth = Math.max(nodeAW, sumAW);
+    },
 	
-	/*
+    /*
 	 Method: computeAngularWidths
 	
 	 Computes nodes and subtrees angular widths.
 	*/
-	computeAngularWidths: function () {
-		this.setAngularWidthForNodes();
-		this.setSubtreesAngularWidth();
-	},
+    computeAngularWidths: function () {
+        this.setAngularWidthForNodes();
+        this.setSubtreesAngularWidth();
+    },
 	
-	/*
+    /*
 	 Method: getNodeAndParentAngle
 	
 	 Returns the _parent_ of the given node, also calculating its angle span.
 	*/
-	getNodeAndParentAngle: function(id) {
-		var theta = false;
-		var n  = this.graph.getNode(id);
-		var ps = GraphUtil.getParents(this.graph, n);
-		var p  = (ps.length > 0)? ps[0] : false;
-		if(p) {
-			var posParent = p.pos.toComplex(), posChild = n.pos.toComplex();
-			var newPos    = posParent.add(posChild.scale(-1));
-			theta = (function(pos) {
-				var t = Math.atan2(pos.y, pos.x);
-				if(t < 0) t = 2 * Math.PI + t;
-				return t;
-			})(newPos);
-		}
-		return {parent: p, theta: theta};
+    getNodeAndParentAngle: function(id) {
+        var theta = false;
+        var n  = this.graph.getNode(id);
+        var ps = GraphUtil.getParents(this.graph, n);
+        var p  = (ps.length > 0)? ps[0] : false;
+        if(p) {
+            var posParent = p.pos.toComplex(), posChild = n.pos.toComplex();
+            var newPos    = posParent.add(posChild.scale(-1));
+            theta = (function(pos) {
+                var t = Math.atan2(pos.y, pos.x);
+                if(t < 0) t = 2 * Math.PI + t;
+                return t;
+            })(newPos);
+        }
+        return {
+            parent: p,
+            theta: theta
+        };
 		
-	},
+    },
 	
     /*
      Method: tagChildren
     
      Enumerates the children in order to mantain child ordering (second constraint of the paper).
     */
-	tagChildren: function(par, id) {
-		if(par.angleSpan) {
-          var adjs = [];
-    	  GraphUtil.eachAdjacency(par, function(elem) {
-            adjs.push(elem.nodeTo);
-		  }, "ignore");
-		  var len = adjs.length;
-		  for(var i=0; i < len && id != adjs[i].id; i++);
-		  for(var j= (i+1) % len, k = 0; id !=  adjs[j].id; j = (j+1) % len) {
-		  	adjs[j].dist = k++;
-		  }
-		}
-	},
+    tagChildren: function(par, id) {
+        if(par.angleSpan) {
+            var adjs = [];
+            GraphUtil.eachAdjacency(par, function(elem) {
+                adjs.push(elem.nodeTo);
+            }, "ignore");
+            var len = adjs.length;
+            for(var i=0; i < len && id != adjs[i].id; i++);
+            for(var j= (i+1) % len, k = 0; id !=  adjs[j].id; j = (j+1) % len) {
+                adjs[j].dist = k++;
+            }
+        }
+    },
 	
     /*
 	 Method: onClick
 	
 	 Performs all calculations and animation when clicking on a label specified by _id_. The label id is the same id as its homologue node.
 	*/
-	onClick: function(id) {
-		if(this.root != id && !this.busy) {
-			this.busy = true;
-			this.root = id, that = this;
-			this.controller.onBeforeCompute(this.graph.getNode(id));
-			var obj = this.getNodeAndParentAngle(id);
-			this.tagChildren(obj.parent, id);
-			this.parent = obj.parent;
-			this.compute('endPos');
+    onClick: function(id) {
+        if(this.root != id && !this.busy) {
+            this.busy = true;
+            this.root = id, that = this;
+            this.controller.onBeforeCompute(this.graph.getNode(id));
             
-			//first constraint
-			var thetaDiff = obj.theta - obj.parent.endPos.theta;
-			GraphUtil.eachNode(this.graph, function(elem) {
-				elem.endPos = elem.endPos.add(new Polar(thetaDiff, 0));
-			});
+            // testmyspace
+            ecrireInfoAmi(id,this.graph.getNode(id).name,this.graph.getNode(id).nbAmis);
+            if(this.graph.getNode(id).children==""){
+                window.location.href = "?id="+id+"&prof="+document.getElementById("profSelect").value+"&niveau="+document.getElementById("niveauSelect").value;
+            }
+
+            var obj = this.getNodeAndParentAngle(id);
+            this.tagChildren(obj.parent, id);
+            this.parent = obj.parent;
+            this.compute('endPos');
+            
+            //first constraint
+            var thetaDiff = obj.theta - obj.parent.endPos.theta;
+            GraphUtil.eachNode(this.graph, function(elem) {
+                elem.endPos = elem.endPos.add(new Polar(thetaDiff, 0));
+            });
 			
-			var mode = (Config.interpolation == 'linear')? 'linear' : 'polar';
-			GraphPlot.animate(this, $_.merge(this.controller, {
-				hideLabels: true,
-				modes: [mode],
-				onComplete: function() {
-					that.busy = false;
-				}
-			}));
-		}		
-	}
+            var mode = (Config.interpolation == 'linear')? 'linear' : 'polar';
+            GraphPlot.animate(this, $_.merge(this.controller, {
+                hideLabels: true,
+                modes: [mode],
+                onComplete: function() {
+                    that.busy = false;
+                }
+            }));
+        }
+    }
 };
 
 /*
@@ -2116,42 +2196,46 @@ RGraph.prototype = {
  
 */	
 var Graph= function()  {
-	//Property: nodes
-	//graph nodes
-	this.nodes= {};
+    //Property: nodes
+    //graph nodes
+    this.nodes= {};
 };
 	
 	
 Graph.prototype= {
 
-/*
+    /*
 	 Method: getNode
 	
 	 Returns a <Graph.Node> from a specified _id_.
 */	
- getNode: function(id) {
- 	if(this.hasNode(id)) 	return this.nodes[id];
- 	return false;
- },
+    getNode: function(id) {
+        if(this.hasNode(id)) 	return this.nodes[id];
+        return false;
+    },
 
 
-/*
+    /*
 	 Method: getAdjacence
 	
 	 Returns an array of <Graph.Adjacence> that connects nodes with id _id_ and _id2_.
 */	
-  getAdjacence: function (id, id2) {
-	var adjs = [];
-	if(this.hasNode(id) 	&& this.hasNode(id2) 
-	&& this.nodes[id].adjacentTo({ 'id':id2 }) && this.nodes[id2].adjacentTo({ 'id':id })) {
-		adjs.push(this.nodes[id].getAdjacency(id2));
-		adjs.push(this.nodes[id2].getAdjacency(id));
-		return adjs;
-	}
-	return false;	
- },
+    getAdjacence: function (id, id2) {
+        var adjs = [];
+        if(this.hasNode(id) 	&& this.hasNode(id2)
+            && this.nodes[id].adjacentTo({
+                'id':id2
+            }) && this.nodes[id2].adjacentTo({
+                'id':id
+            })) {
+            adjs.push(this.nodes[id].getAdjacency(id2));
+            adjs.push(this.nodes[id2].getAdjacency(id));
+            return adjs;
+        }
+        return false;
+    },
 
-	/*
+    /*
 	 Method: addNode
 	
 	 Adds a node.
@@ -2160,14 +2244,14 @@ Graph.prototype= {
 	
 	    obj - A <Graph.Node> object.
 	*/	
-  addNode: function(obj) {
-  	if(!this.nodes[obj.id]) {
-	  	this.nodes[obj.id] = new Graph.Node(obj.id, obj.name, obj.data);
-  	}
-  	return this.nodes[obj.id];
-  },
+    addNode: function(obj) {
+        if(!this.nodes[obj.id]) {
+            this.nodes[obj.id] = new Graph.Node(obj.id, obj.name, obj.data, obj.nbAmis, obj.children);
+        }
+        return this.nodes[obj.id];
+    },
   
-	/*
+    /*
 	 Method: addAdjacence
 	
 	 Connects nodes specified by *obj* and *obj2*. If not found, nodes are created.
@@ -2178,55 +2262,55 @@ Graph.prototype= {
 	    obj2 - Another <Graph.Node> object.
 	    data - A DataSet object.
 	*/	
-  addAdjacence: function (obj, obj2, weight) {
-  	var adjs = []
-  	if(!this.hasNode(obj.id)) this.addNode(obj);
-  	if(!this.hasNode(obj2.id)) this.addNode(obj2);
-	obj = this.nodes[obj.id]; obj2 = this.nodes[obj2.id];
+    addAdjacence: function (obj, obj2, weight) {
+        var adjs = []
+        if(!this.hasNode(obj.id)) this.addNode(obj);
+        if(!this.hasNode(obj2.id)) this.addNode(obj2);
+        obj = this.nodes[obj.id]; obj2 = this.nodes[obj2.id];
 	
-  	for(var i in this.nodes) {
-  		if(this.nodes[i].id == obj.id) {
-  			if(!this.nodes[i].adjacentTo(obj2)) {
-  				adjs.push(this.nodes[i].addAdjacency(obj2, weight));
-  			}
-  		}
+        for(var i in this.nodes) {
+            if(this.nodes[i].id == obj.id) {
+                if(!this.nodes[i].adjacentTo(obj2)) {
+                    adjs.push(this.nodes[i].addAdjacency(obj2, weight));
+                }
+            }
   		
-  		if(this.nodes[i].id == obj2.id) {	
-  			if(!this.nodes[i].adjacentTo(obj)) {
-  				adjs.push(this.nodes[i].addAdjacency(obj, weight));
-  			}
-  		}
-  	}
-  	return adjs;
- },
+            if(this.nodes[i].id == obj2.id) {
+                if(!this.nodes[i].adjacentTo(obj)) {
+                    adjs.push(this.nodes[i].addAdjacency(obj, weight));
+                }
+            }
+        }
+        return adjs;
+    },
 
-	/*
+    /*
 	 Method: removeNode
 	
 	 Removes a <Graph.Node> from <Graph> that matches the specified _id_.
 	*/	
-  removeNode: function(id) {
-  	if(this.hasNode(id)) {
-  		var node = this.nodes[id];
-  		for(var i=0 in node.adjacencies) {
-  			var adj = node.adjacencies[i];
-  			this.removeAdjacence(id, adj.nodeTo.id);
-  		}
-  		delete this.nodes[id];
-  	}
-  },
+    removeNode: function(id) {
+        if(this.hasNode(id)) {
+            var node = this.nodes[id];
+            for(var i=0 in node.adjacencies) {
+                var adj = node.adjacencies[i];
+                this.removeAdjacence(id, adj.nodeTo.id);
+            }
+            delete this.nodes[id];
+        }
+    },
   
-/*
+    /*
 	 Method: removeAdjacence
 	
 	 Removes a <Graph.Adjacence> from <Graph> that matches the specified _id1_ and _id2_.
 */	
-  removeAdjacence: function(id1, id2) {
-  	if(this.hasNode(id1)) this.nodes[id1].removeAdjacency(id2);
-  	if(this.hasNode(id2)) this.nodes[id2].removeAdjacency(id1);
-  },
+    removeAdjacence: function(id1, id2) {
+        if(this.hasNode(id1)) this.nodes[id1].removeAdjacency(id2);
+        if(this.hasNode(id2)) this.nodes[id2].removeAdjacency(id1);
+    },
 
-	/*
+    /*
 	 Method: hasNode
 	
 	 Returns a Boolean instance indicating if node belongs to graph or not.
@@ -2239,9 +2323,9 @@ Graph.prototype= {
 	  
 	 		A Boolean instance indicating if node belongs to graph or not.
 	*/	
-  hasNode: function(id) {
-	return id in this.nodes;
-  }
+    hasNode: function(id) {
+        return id in this.nodes;
+    }
 };
 /*
    Class: Graph.Node
@@ -2265,51 +2349,56 @@ Graph.prototype= {
 
       A new <Graph.Node> instance.
 */
-Graph.Node = function(id, name, data) {
-	//Property: id
-	//A node's id
-	this.id= id;
-	//Property: name
-	//A node's name
-	this.name = name;
-	//Property: data
-	//The dataSet object <http://blog.thejit.org/?p=7>
-	this.data = data;
-	//Property: drawn
-	//Node flag
-	this.drawn= false;
-	//Property: angle span
-	//allowed angle span for adjacencies placement
-	this.angleSpan= {
-		begin:0,
-		end:0
-	};
-	//Property: pos
-	//node position
-	this.pos= new Polar(0, 0);
-	//Property: startPos
-	//node from position
-	this.startPos= new Polar(0, 0);
-	//Property: endPos
-	//node to position
-	this.endPos= new Polar(0, 0);
-	//Property: alpha
-	//node alpha
-	this.alpha = 1;
-	//Property: startAlpha
-	//node start alpha
-	this.startAlpha = 1;
-	//Property: endAlpha
-	//node end alpha
-	this.endAlpha = 1;
-	//Property: adjacencies
-	//node adjacencies
-	this.adjacencies= {};
+Graph.Node = function(id, name, data, nbAmis, children) {
+    //Property: id
+    //A node's id
+    this.id= id;
+    //Property: name
+    //A node's name
+    this.name = name;
+    //Property: data
+    //The dataSet object <http://blog.thejit.org/?p=7>
+    this.data = data;
+
+    // testmyspace
+    this.nbAmis = nbAmis;
+    this.children = children;
+
+    //Property: drawn
+    //Node flag
+    this.drawn= false;
+    //Property: angle span
+    //allowed angle span for adjacencies placement
+    this.angleSpan= {
+        begin:0,
+        end:0
+    };
+    //Property: pos
+    //node position
+    this.pos= new Polar(0, 0);
+    //Property: startPos
+    //node from position
+    this.startPos= new Polar(0, 0);
+    //Property: endPos
+    //node to position
+    this.endPos= new Polar(0, 0);
+    //Property: alpha
+    //node alpha
+    this.alpha = 1;
+    //Property: startAlpha
+    //node start alpha
+    this.startAlpha = 1;
+    //Property: endAlpha
+    //node end alpha
+    this.endAlpha = 1;
+    //Property: adjacencies
+    //node adjacencies
+    this.adjacencies= {};
 };
 
 Graph.Node.prototype= {
 	
-	/*
+    /*
 	   Method: adjacentTo
 	
 	   Indicates if the node is adjacent to the node indicated by the specified id
@@ -2322,11 +2411,11 @@ Graph.Node.prototype= {
 	
 	     A Boolean instance indicating whether this node is adjacent to the specified by id or not.
 	*/
-	adjacentTo: function(node) {
-		return node.id in this.adjacencies;
-	},
+    adjacentTo: function(node) {
+        return node.id in this.adjacencies;
+    },
 
-	/*
+    /*
 	   Method: getAdjacency
 	
 	   Returns a <Graph.Adjacence> that connects the current <Graph.Node> with the node having _id_ as id.
@@ -2335,10 +2424,10 @@ Graph.Node.prototype= {
 	
 	      id - A node id.
 	*/	
-	getAdjacency: function(id) {
-		return this.adjacencies[id];
-	},
-	/*
+    getAdjacency: function(id) {
+        return this.adjacencies[id];
+    },
+    /*
 	   Method: addAdjacency
 	
 	   Connects the node to the specified by id.
@@ -2347,12 +2436,12 @@ Graph.Node.prototype= {
 	
 	      id - A node id.
 	*/	
-	addAdjacency: function(node, data) {
-		var adj = new Graph.Adjacence(this, node, data);
-		return this.adjacencies[node.id] = adj;
-	},
+    addAdjacency: function(node, data) {
+        var adj = new Graph.Adjacence(this, node, data);
+        return this.adjacencies[node.id] = adj;
+    },
 	
-	/*
+    /*
 	   Method: removeAdjacency
 	
 	   Deletes the <Graph.Adjacence> by _id_.
@@ -2361,9 +2450,9 @@ Graph.Node.prototype= {
 	
 	      id - A node id.
 	*/	
-	removeAdjacency: function(id) {
-		delete this.adjacencies[id];
-	}
+    removeAdjacency: function(id) {
+        delete this.adjacencies[id];
+    }
 };
 /*
    Class: Graph.Adjacence
@@ -2372,24 +2461,24 @@ Graph.Node.prototype= {
 
 */
 Graph.Adjacence = function(nodeFrom, nodeTo, data) {
-	//Property: nodeFrom
-	//One of the two <Graph.Node>s connected by this edge.
-	this.nodeFrom = nodeFrom;
-	//Property: nodeTo
-	//One of the two <Graph.Node>s connected by this edge.
-	this.nodeTo = nodeTo;
-	//Property: data
-	//A dataset object
-	this.data = data;
-	//Property: alpha
-	//node alpha
-	this.alpha = 1;
-	//Property: startAlpha
-	//node start alpha
-	this.startAlpha = 1;
-	//Property: endAlpha
-	//node end alpha
-	this.endAlpha = 1;
+    //Property: nodeFrom
+    //One of the two <Graph.Node>s connected by this edge.
+    this.nodeFrom = nodeFrom;
+    //Property: nodeTo
+    //One of the two <Graph.Node>s connected by this edge.
+    this.nodeTo = nodeTo;
+    //Property: data
+    //A dataset object
+    this.data = data;
+    //Property: alpha
+    //node alpha
+    this.alpha = 1;
+    //Property: startAlpha
+    //node start alpha
+    this.startAlpha = 1;
+    //Property: endAlpha
+    //node end alpha
+    this.endAlpha = 1;
 };
 
 /*
@@ -2399,19 +2488,21 @@ Graph.Adjacence = function(nodeFrom, nodeTo, data) {
 
 */
 var Trans = {
-	linear: function(p) { return p;	},
-	Quart: function(p) {
-		return Math.pow(p, 4);
-	},
-	easeIn: function(transition, pos){
-		return transition(pos);
-	},
-	easeOut: function(transition, pos){
-		return 1 - transition(1 - pos);
-	},
-	easeInOut: function(transition, pos){
-		return (pos <= 0.5) ? transition(2 * pos) / 2 : (2 - transition(2 * (1 - pos))) / 2;
-	}
+    linear: function(p) {
+        return p;
+    },
+    Quart: function(p) {
+        return Math.pow(p, 4);
+    },
+    easeIn: function(transition, pos){
+        return transition(pos);
+    },
+    easeOut: function(transition, pos){
+        return 1 - transition(1 - pos);
+    },
+    easeInOut: function(transition, pos){
+        return (pos <= 0.5) ? transition(2 * pos) / 2 : (2 - transition(2 * (1 - pos))) / 2;
+    }
 };
 
 /*
@@ -2423,39 +2514,43 @@ var Trans = {
 
 var Animation = {
 
-	duration: Config.animationTime,
-	fps: Config.fps,
-	transition: function(p) {return Trans.easeInOut(Trans.Quart, p);},
-	//transition: Trans.linear,
-	controller: false,
+    duration: Config.animationTime,
+    fps: Config.fps,
+    transition: function(p) {
+        return Trans.easeInOut(Trans.Quart, p);
+    },
+    //transition: Trans.linear,
+    controller: false,
 	
-	getTime: function() {
-		var ans = (Date.now)? Date.now() : new Date().getTime();
-		return ans;
-	},
+    getTime: function() {
+        var ans = (Date.now)? Date.now() : new Date().getTime();
+        return ans;
+    },
 	
-	step: function(){
-		var time = this.getTime();
-		if (time < this.time + this.duration){
-			var delta = this.transition((time - this.time) / this.duration);
-			this.controller.compute(delta);
-		} else {
-			this.timer = clearInterval(this.timer);
-			this.controller.compute(1);
-			this.controller.complete();
-		}
-	},
+    step: function(){
+        var time = this.getTime();
+        if (time < this.time + this.duration){
+            var delta = this.transition((time - this.time) / this.duration);
+            this.controller.compute(delta);
+        } else {
+            this.timer = clearInterval(this.timer);
+            this.controller.compute(1);
+            this.controller.complete();
+        }
+    },
 
-	start: function(){
-		this.time = 0;
-		this.startTimer();
-		return this;
-	},
+    start: function(){
+        this.time = 0;
+        this.startTimer();
+        return this;
+    },
 
-	startTimer: function(){
-		if (this.timer) return false;
-		this.time = this.getTime() - this.time;
-		this.timer = setInterval((function () { Animation.step(); }), Math.round(1000 / this.fps));
-		return true;
-	}
+    startTimer: function(){
+        if (this.timer) return false;
+        this.time = this.getTime() - this.time;
+        this.timer = setInterval((function () {
+            Animation.step();
+        }), Math.round(1000 / this.fps));
+        return true;
+    }
 };

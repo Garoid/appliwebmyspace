@@ -12,21 +12,12 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Utilisation de l'API MySpace</title>
         <link rel=stylesheet type="text/css" href="style.css">
-        <script type="text/javascript" src="js/excanvas.js"></script> 
-    <script type="text/javascript" src="js/mootools-1.2.js" ></script>  
-    <script type="text/javascript" src="js/RGraph.js" ></script>  
-    <script type="text/javascript" src="js/testAffichage.js" ></script>
-        <script>
-            
-            /*/function envoiInfo(idM, profondeur){
-                $.get("Extraction",{id:idM.value},function(data){
-                    $("div#myspaceGraph").text(data);
-                });
-            }*/
-            
-        </script>
+        <script type="text/javascript" src="js/excanvas.js"></script>
+        <script type="text/javascript" src="js/mootools-1.2.js" ></script>
+        <script type="text/javascript" src="js/RGraph.js" ></script>
+        <script type="text/javascript" src="js/testAffichage.js" ></script>
     </head>
-    <body onload="init();">
+    <body onload="sentInfo();">
         <div id="wrap">
             <div id="header">
                 <h1><a href="#">GraphSpace</a></h1>
@@ -36,30 +27,52 @@
                 <h2><a href="#">Graph</a></h2>
                 <div id="myspaceGraph"></div>
                 <div id="infovis"></div>
+                <div id="tempsTraitement"></div>
             </div>
 
             <div id="rightmenu">
                 <h2>Enter your informations</h2>
                 <ul>
-                    <form method="post" action="Extraction">
-                        <li><a href="#">ID du profil MySpace</a>
-                        <input type="text" name="id" /></li><br />
-                        <li><a href="#">Profondeur des amis</a></li>
-                        <li><select name="profondeur">
-                                <option value="1" selected>1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                                <option value="6">6</option>
-                                <option value="7">7</option>
-                                <option value="8">8</option>
-                                <option value="9">9</option>
-                                <option value="10">10</option>
+                    <form method="post" action="#">
+                        <li><a href="#">ID of profile<br></a>
+                        <input type="text" name="id" id="idInput" 
+                        <%
+                        if(request.getParameter("id")!=null)
+                            out.print("value=\""+request.getParameter("id")+"\" ");
+                        %>/></li><br />
+                        <li><a href="#">Number of friends</a></li>
+                        <li><select name="profondeur" id="profSelect">
+                            <%
+                                for(int i=1;i<=10;i++){
+                                    out.print("<option value=\""+i+"\" ");
+                                    if(request.getParameter("prof")!=null && i==Integer.parseInt(request.getParameter("prof")))
+                                        out.print("selected ");
+                                    else if(i==2)
+                                        out.print("selected ");
+                                    out.println(">"+i+"</option>");
+
+                                }
+                            %>
                             </select>
                         </li><br />
-                        <li><input type="submit" value="Envoyer" /></li>
+                        <li><a href="#">Friends depth</a></li>
+                        <li><select name="niveau" id="niveauSelect">
+                            <%
+                                for(int i=1;i<=3;i++){
+                                    out.print("<option value=\""+i+"\" ");
+                                    if(request.getParameter("niveau")!=null && i==Integer.parseInt(request.getParameter("niveau")))
+                                        out.print("selected ");
+                                    else if(i==1)
+                                        out.print("selected ");
+                                    out.println(">"+i+"</option>");
+
+                                }
+                            %>
+                            </select>
+                        </li><br />
+                        <li><input type="button" value="Envoyer" id="btnClick" onclick="init(this.form.id.value,this.form.profondeur,this.form.niveau); return false;"/></li>
                     </form>
+                    <div id="infos"></div>
                 </ul>
             </div>
 

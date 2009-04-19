@@ -98,6 +98,8 @@ public class WebPageExtractor {
     private LinkedList<Table> m_tables = null;
     /** list of div elements in this HTML page */
     private LinkedList<Div> m_divs = null;
+    /** list of span elements in this HTML page */
+    private LinkedList<Span> m_spans = null;
 
     private LinkedList<Anchor> m_anchor = null;
 
@@ -218,6 +220,10 @@ public class WebPageExtractor {
         return m_links;
     }
 
+    public final LinkedList<Span> getSpans() {
+        return m_spans;
+    }
+
     /**
      * @return the LinkedList of the &lt;meta&gt; elements of the document
      * @see Meta
@@ -310,6 +316,7 @@ public class WebPageExtractor {
         m_tables = new LinkedList<Table>();
         m_divs = new LinkedList<Div>();
         m_anchor = new LinkedList<Anchor>();
+        m_spans = new LinkedList<Span>();
 
         // current block of HTML being extracted
         StringBuffer block = new StringBuffer();
@@ -325,6 +332,10 @@ public class WebPageExtractor {
 
         while (l_part != null) {
             String l_low_part = l_part.toLowerCase();
+            if (isSpan(l_low_part)) // extract <span> of document
+            {
+                m_spans.add(new Span(extractAttributeValue("class", l_part),extractAttributeValue("id", l_part),lexical.getNextPart()));
+            } else
             if (isTable(l_low_part)) // extract <table> of document
             {
                 m_tables.add(new Table(extractAttributeValue("id", l_part)));
@@ -580,6 +591,10 @@ public class WebPageExtractor {
         return (word.startsWith("<link"));
     }
 
+    private static boolean isSpan(String word) {
+        return (word.startsWith("<span"));
+    }
+
     private static boolean isScript(String word) {
         return (word.startsWith("<script"));
     }
@@ -602,6 +617,9 @@ public class WebPageExtractor {
 
     private static boolean endDiv(String word) {
         return (word.startsWith("</div"));
+    }
+    private static boolean endSpan(String word) {
+        return (word.startsWith("</span"));
     }
 
     /**

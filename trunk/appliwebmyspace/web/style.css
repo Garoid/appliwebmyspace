@@ -1,111 +1,111 @@
 * {
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-background: #404347 url(images/bg.gif) repeat-x;
-font-family: Verdana, Arial, Helvetica, sans-serif;
-font-size: 12px;
-color: #f7f7f7;
+    background: #404347 url(images/bg.gif) repeat-x;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    color: #f7f7f7;
 }
 
 a { color: #60C3DB; text-decoration: none; }
 a:hover { text-decoration: underline; }
 
 #wrap {
-width: 980px;
-margin: 0 auto;
+    width: 980px;
+    margin: 0 auto;
 }
 
 #header {
-margin: 40px 0 50px 0;
+    margin: 40px 0 50px 0;
 }
 #header h1 {
-font-size: 26px;
-font-weight: 100;
-letter-spacing: -2px;
+    font-size: 26px;
+    font-weight: 100;
+    letter-spacing: -2px;
 }
 #header h1 a {
-color: #FAFFB0;
-text-decoration: none;
+    color: #FAFFB0;
+    text-decoration: none;
 }
 #header h1 a:hover {
-color: #eee;
-text-decoration: none;
+    color: #eee;
+    text-decoration: none;
 }
 #header h2 {
-color: #999;
-font-size: 18px;
-font-weight: 100;
+    color: #999;
+    font-size: 18px;
+    font-weight: 100;
 }
 
 #content {
-float: right;
-width: 468px;
-padding: 0 20px 20px 20px;
-border-left: 1px dotted #aaa;
-text-align: justify;
+    float: right;
+    width: 468px;
+    padding: 0 20px 20px 20px;
+    border-left: 1px dotted #aaa;
+    text-align: justify;
 }
 #content h2 {
-color: #B0FFBD;
-font-size: 16px;
-font-weight: 100;
-padding: 10px 0 5px 0;
-border-bottom: 1px dotted #aaa;
-margin-bottom: 10px;
+    color: #B0FFBD;
+    font-size: 16px;
+    font-weight: 100;
+    padding: 10px 0 5px 0;
+    border-bottom: 1px dotted #aaa;
+    margin-bottom: 10px;
 }
 #content h2 a {
-color: #B0FFBD;
-text-decoration: none;
+    color: #B0FFBD;
+    text-decoration: none;
 }
 #content h2 a:hover {
-color: #eee;
+    color: #eee;
 }
 
 #leftmenu {
-float: left;
-width: 160px;
-padding: 0 20px 20px 0;
+    float: left;
+    width: 160px;
+    padding: 0 20px 20px 0;
 }
 #leftmenu h2 {
-border-bottom: 1px dotted #aaa;
-padding: 10px 0 5px 0;
-margin-bottom: 10px;
-color: #B0FFBD;
-font-size: 16px;
-font-weight: 100;
+    border-bottom: 1px dotted #aaa;
+    padding: 10px 0 5px 0;
+    margin-bottom: 10px;
+    color: #B0FFBD;
+    font-size: 16px;
+    font-weight: 100;
 }
 #leftmenu ul {
-list-style-type: none;
-padding: 0 0 10px 0;
+    list-style-type: none;
+    padding: 0 0 10px 0;
 }
 
 #rightmenu {
-float: left;
-width: 250px;
-padding: 0 20px 20px 20px;
-border-left: 1px dotted #aaa;
+    float: left;
+    width: 250px;
+    padding: 0 20px 20px 20px;
+    border-left: 1px dotted #aaa;
 }
 #rightmenu h2 {
-border-bottom: 1px dotted #aaa;
-padding: 10px 0 5px 0;
-margin-bottom: 10px;
-color: #B0FFBD;
-font-size: 16px;
-font-weight: 100;
+    border-bottom: 1px dotted #aaa;
+    padding: 10px 0 5px 0;
+    margin-bottom: 10px;
+    color: #B0FFBD;
+    font-size: 16px;
+    font-weight: 100;
 }
 #rightmenu ul {
-list-style-type: none;
-padding: 0 0 10px 0;
+    list-style-type: none;
+    padding: 0 0 10px 0;
 }
 
 #footer {
-margin-top: 20px;
-border-top: 1px dotted #aaa;
-font-size: 11px;
-text-align: center;
-padding: 10px 0 10px 0;
+    margin-top: 20px;
+    border-top: 1px dotted #aaa;
+    font-size: 11px;
+    text-align: center;
+    padding: 10px 0 10px 0;
 }
 #footer a { 
 
@@ -113,26 +113,49 @@ padding: 10px 0 10px 0;
 #footer a:hover {
 
 }
+#tempsTraitement {
+    text-align: center;
+}
+
+#infos h2 {
+    border-bottom: 1px dotted #aaa;
+    padding: 10px 0 5px 0;
+    margin-bottom: 10px;
+    color: #B0FFBD;
+    font-size: 16px;
+    font-weight: 100;
+}
+
+#infos a { color: #FFF; text-decoration: none; }
+#infos a:hover { text-decoration: underline; }
 
 #infovis {  
-    width:500px;  
-    height:300px;  
-    background-color:#222;  
-}  
-  
+    width:500px;
+    height:400px;
+    background-color:#222;
+    text-align: center;
+    margin: auto;
+}
+
+
+#infovis img {
+    margin-top: 175px
+}
+
+
 .node {  
-    color: white;  
-    background-color:transparent;  
-    cursor:pointer;  
-    font-weight:bold;  
-    opacity:0.9;  
-    border:1px solid red;  
+    color: white;
+    background-color:transparent;
+    cursor:pointer;
+    font-weight:bold;
+    opacity:0.9;
+    /*border:1px solid white;*/
 }  
-  
+
 .node:hover {  
-    cursor:pointer;  
-    color: #222;  
-    background-color:white;  
-    font-weight:bold;  
-    opacity:1;  
+    cursor:pointer;
+    color: #222;
+    background-color:white;
+    font-weight:bold;
+    opacity:1;
 }  
