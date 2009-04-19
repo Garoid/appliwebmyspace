@@ -7,7 +7,9 @@ package Servlet;
 import fr.inria.edelweiss.extractor.webpage.*;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -24,10 +26,12 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import org.json.simple.JSONArray;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -42,56 +46,88 @@ public class Extraction extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    static int niveau = 0;
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ParserConfigurationException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
-            // 31427788 ID ARMAND GUEIT
-            // 31427788 ID ARMAND GUEIT
-            // 31427788 ID ARMAND GUEIT
-            // 31427788 ID ARMAND GUEIT
-            // 31427788 ID ARMAND GUEIT
-            // 31427788 ID ARMAND GUEIT
-            // 31427788 ID ARMAND GUEIT
 
             if (request.getParameter("id") != null) {
-                //WebPageExtractor extractor = new WebPageExtractor(new URL("http://profile.myspace.com/index.cfm?fuseaction=user.viewProfile&friendID=" + request.getParameter("id")));
                 WebPageExtractor extractor = new WebPageExtractor(new URL("http://friends.myspace.com/index.cfm?fuseaction=user.viewfriends&friendID=" + request.getParameter("id")));
                 extractor.extract();
 
                 if (!extractor.getTitle().equalsIgnoreCase("Invalid Friend ID")) {
-                    //createXML(extractor);
-                    out.println("Fichier profil.xml a été créé avec succès" + "<br />");
-                    out.println("===========================================" + "<br />");
-                    out.println("Tous les class des div" + "<br />");
-                    out.println("===========================================" + "<br />");
-                    int indexF = 0;
-                    for (Div div : extractor.getDivs()) {
+                    String nomProfil = "";
+                    String[] tab = extractor.getTitle().split("Amis de ");
+                    nomProfil = tab[1];
+                    niveau = Integer.parseInt(request.getParameter("niveau"));
 
-                        if(div.getDivClass()!=null && div.getDivClass().equals("friendHelperBox")){
-                            out.println(div.getFriendId()+" // Pseudo : "+extractor.getAnchors().get(indexF)+"<br />");
-                            indexF++;
-                        }
+                    JSONObject profil = createFriend(request.getParameter("id"), nomProfil, extractNombreAmis(request.getParameter("id")), 8, -33);
 
-                    }
-                //out.println("Tous les id des table" + "<br />");
-                //out.println("===========================================" + "<br />");
-                //for (Table table : extractor.getTables()){
-                //    out.println(table.getTableClass() + "<br />");
-                //}
+                    int profAmi = Integer.parseInt(request.getParameter("prof"));
+                    
+                    JSONArray profilChildren = getFriends(request.getParameter("id"),profAmi,1);
+
+                    profil.put("children", profilChildren);
+
+                    out.print(profil);
+                    out.flush();
                 } else {
                     out.println("L'ID " + request.getParameter("id") + " ne correspond à aucun profil dans MySpace...");
                 }
-
-
-            //ContentBlock cb = new ContentBlock();
-            // show internal structure
-            //out.println(extractor.toString());
-            // show extracted text
             }
         } finally {
             out.close();
         }
+    }
+
+    protected JSONArray getFriends(String id, int profAmi, int n) throws MalformedURLException, IOException {
+        if (n <= niveau) {
+            WebPageExtractor extractor = new WebPageExtractor(new URL("http://friends.myspace.com/index.cfm?fuseaction=user.viewfriends&friendID=" + id));
+            extractor.extract();
+            int indexF = 0;
+            JSONArray amis = new JSONArray();
+            for (Div div : extractor.getDivs()) {
+                if (div.getDivClass() != null && div.getDivClass().equals("friendHelperBox") && indexF < profAmi) {
+                    JSONObject ami = createFriend(div.getFriendId(), extractor.getAnchors().get(indexF).getTitle(), extractNombreAmis(div.getFriendId()), 0, 0);
+                    JSONArray amiChildren = getFriends(div.getFriendId(), profAmi, n + 1);
+
+                    ami.put("children", amiChildren);
+                    amis.add(ami);
+
+                    indexF++;
+
+                }
+                if (indexF == profAmi) {
+                    break;
+                }
+
+            }
+            return amis;
+        }
+        return new JSONArray();
+    }
+
+    protected JSONObject createFriend(String id, String name, String nbAmis, Integer keyI1, Integer keyI2) {
+        JSONObject obj = new JSONObject();
+        JSONObject key = new JSONObject();
+        JSONObject key2 = new JSONObject();
+        JSONArray array = new JSONArray();
+
+        key.put("key", "key1");
+        key.put("value", keyI1);
+        key2.put("key", "key2");
+        key2.put("value", keyI2);
+
+        array.add(key);
+        array.add(key2);
+
+        obj.put("id", id);
+        obj.put("name", name);
+        obj.put("data", array);
+        obj.put("nbAmis", nbAmis);
+        return obj;
     }
 
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -136,44 +172,18 @@ public class Extraction extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    protected void createXML(WebPageExtractor extractor) throws ParserConfigurationException, TransformerConfigurationException, TransformerException {
-        Document document = null;
-        DocumentBuilderFactory factory = null;
-        factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        document = builder.newDocument();
-
-        Element racine = (Element) document.createElement("profil");
-        document.appendChild(racine);
-
-//        Element friends = (Element) document.createElement("friends");
-//        racine.appendChild(friends);
-
-//        for (Div div : extractor.getDivs()){
-//            System.out.println("DIV CLASS : "+div.getDivClass());
-//            if (div.getDivClass().equals("userComment")){
-//                Element friend = (Element) document.createElement("friend");
-//                friends.appendChild(friend);
-//            }
-//
-//        }
-
-        TransformerFactory fact = TransformerFactory.newInstance();
-        Transformer transf = fact.newTransformer();
-        //transf.setOutputProperty(OutputKeys.STANDALONE, "yes");
-        transf.transform(new DOMSource(document), new StreamResult("profil.xml"));
-    }
-
-    public static void parcourir(Node node) {
-        for (node = node.getFirstChild(); node != null; node = node.getNextSibling()) {
-            if (node.getNodeName().equalsIgnoreCase("nom")) {
-                System.out.println("nom : " + node.getTextContent());
-            }
-            if (node.getNodeType() == Node.ELEMENT_NODE) {
-                if (((Element) node).getAttributeNode("date-naissance") != null) {
+    protected String extractNombreAmis(String id) throws MalformedURLException, IOException {
+        WebPageExtractor extractor = new WebPageExtractor(new URL("http://friends.myspace.com/index.cfm?fuseaction=user.viewfriends&friendID=" + id));
+        extractor.extract();
+        String[] tab2;
+        for (Span span : extractor.getSpans()) {
+            if (span.getSpanClass() != null && span.getSpanClass().equals("pgerTitle")) {
+                tab2 = span.getSpanContent().split("sur ");
+                if (tab2.length > 1) {
+                    return tab2[1];
                 }
             }
-            parcourir(node);
         }
+        return "";
     }
 }
