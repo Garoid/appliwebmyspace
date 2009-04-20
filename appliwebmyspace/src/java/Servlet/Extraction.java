@@ -57,17 +57,18 @@ public class Extraction extends HttpServlet {
                 WebPageExtractor extractor = new WebPageExtractor(new URL("http://friends.myspace.com/index.cfm?fuseaction=user.viewfriends&friendID=" + request.getParameter("id")));
                 extractor.extract();
 
+                String number = request.getParameter("number");
                 if (!extractor.getTitle().equalsIgnoreCase("Invalid Friend ID")) {
                     String nomProfil = "";
                     String[] tab = extractor.getTitle().split("Amis de ");
                     nomProfil = tab[1];
                     niveau = Integer.parseInt(request.getParameter("niveau"));
 
-                    JSONObject profil = createFriend(request.getParameter("id"), nomProfil, extractNombreAmis(request.getParameter("id")), 8, -33);
+                    JSONObject profil = createFriend(request.getParameter("id"), nomProfil, extractNombreAmis(request.getParameter("id"),number), 8, -33);
 
                     int profAmi = Integer.parseInt(request.getParameter("prof"));
                     
-                    JSONArray profilChildren = getFriends(request.getParameter("id"),profAmi,1);
+                    JSONArray profilChildren = getFriends(request.getParameter("id"),profAmi,1,number);
 
                     profil.put("children", profilChildren);
 
@@ -82,7 +83,7 @@ public class Extraction extends HttpServlet {
         }
     }
 
-    protected JSONArray getFriends(String id, int profAmi, int n) throws MalformedURLException, IOException {
+    protected JSONArray getFriends(String id, int profAmi, int n, String number) throws MalformedURLException, IOException {
         if (n <= niveau) {
             WebPageExtractor extractor = new WebPageExtractor(new URL("http://friends.myspace.com/index.cfm?fuseaction=user.viewfriends&friendID=" + id));
             extractor.extract();
@@ -90,8 +91,8 @@ public class Extraction extends HttpServlet {
             JSONArray amis = new JSONArray();
             for (Div div : extractor.getDivs()) {
                 if (div.getDivClass() != null && div.getDivClass().equals("friendHelperBox") && indexF < profAmi) {
-                    JSONObject ami = createFriend(div.getFriendId(), extractor.getAnchors().get(indexF).getTitle(), extractNombreAmis(div.getFriendId()), 0, 0);
-                    JSONArray amiChildren = getFriends(div.getFriendId(), profAmi, n + 1);
+                    JSONObject ami = createFriend(div.getFriendId(), extractor.getAnchors().get(indexF).getTitle(), extractNombreAmis(div.getFriendId(), number), 0, 0);
+                    JSONArray amiChildren = getFriends(div.getFriendId(), profAmi, n + 1, number);
 
                     ami.put("children", amiChildren);
                     amis.add(ami);
@@ -172,7 +173,9 @@ public class Extraction extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
-    protected String extractNombreAmis(String id) throws MalformedURLException, IOException {
+    protected String extractNombreAmis(String id, String number) throws MalformedURLException, IOException {
+        if(!number.equals("on"))
+            return "Non coché";
         WebPageExtractor extractor = new WebPageExtractor(new URL("http://friends.myspace.com/index.cfm?fuseaction=user.viewfriends&friendID=" + id));
         extractor.extract();
         String[] tab2;

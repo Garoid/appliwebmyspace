@@ -2156,7 +2156,7 @@ RGraph.prototype = {
             // testmyspace
             ecrireInfoAmi(id,this.graph.getNode(id).name,this.graph.getNode(id).nbAmis);
             if(this.graph.getNode(id).children==""){
-                window.location.href = "?id="+id+"&prof="+document.getElementById("profSelect").value+"&niveau="+document.getElementById("niveauSelect").value;
+                window.location.href = "?id="+id+"&prof="+document.getElementById("profSelect").value+"&niveau="+document.getElementById("niveauSelect").value+"&number="+document.getElementById("numberCheck").value;
             }
 
             var obj = this.getNodeAndParentAngle(id);
