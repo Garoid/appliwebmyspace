@@ -15,7 +15,7 @@
         <script type="text/javascript" src="js/excanvas.js"></script>
         <script type="text/javascript" src="js/mootools-1.2.js" ></script>
         <script type="text/javascript" src="js/RGraph.js" ></script>
-        <script type="text/javascript" src="js/testAffichage.js" ></script>
+        <script type="text/javascript" src="js/mySpaceScript.js" ></script>
     </head>
     <body onload="sentInfo();">
         <div id="wrap">
@@ -47,7 +47,7 @@
                                     out.print("<option value=\""+i+"\" ");
                                     if(request.getParameter("prof")!=null && i==Integer.parseInt(request.getParameter("prof")))
                                         out.print("selected ");
-                                    else if(i==2)
+                                    else if(i==4)
                                         out.print("selected ");
                                     out.println(">"+i+"</option>");
 
@@ -62,15 +62,21 @@
                                     out.print("<option value=\""+i+"\" ");
                                     if(request.getParameter("niveau")!=null && i==Integer.parseInt(request.getParameter("niveau")))
                                         out.print("selected ");
-                                    else if(i==1)
+                                    else if(i==2)
                                         out.print("selected ");
                                     out.println(">"+i+"</option>");
 
                                 }
                             %>
                             </select>
-                        </li><br />
-                        <li><input type="button" value="Envoyer" id="btnClick" onclick="init(this.form.id.value,this.form.profondeur,this.form.niveau); return false;"/></li>
+                            <br />
+                        </li>
+                        <br />
+                        <li><a href="#">Get friends number ?</a></li>
+                        <li><input type="checkbox" id="numberCheck" name="number" <%
+
+                        %>/></li><br />
+                        <li><input type="button" value="Envoyer" id="btnClick" onclick="init(this.form.id.value,this.form.profondeur,this.form.niveau,this.form.number); return false;"/></li>
                     </form>
                     <div id="infos"></div>
                 </ul>

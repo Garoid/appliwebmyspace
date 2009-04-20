@@ -17,15 +17,15 @@ function file(fichier)
 
 function sentInfo(){
     if(document.getElementById("idInput").value!=""){
-        init(document.getElementById("idInput").value,document.getElementById("profSelect"),document.getElementById("niveauSelect"));
+        init(document.getElementById("idInput").value,document.getElementById("profSelect"),document.getElementById("niveauSelect"),document.getElementById("numberCheck"));
     }
 }
 
-function init(id,profondeur,niveau){
+function init(id,profondeur,niveau,number){
     tempsDebut = new Date();
     document.getElementById("infovis").innerHTML = "<img src='images/loading.gif'>";
     document.getElementById("btnClick").disabled="disabled";
-    file("Extraction?id="+id+"&prof="+profondeur.value+"&niveau="+niveau.value);
+    file("Extraction?id="+id+"&prof="+profondeur.value+"&niveau="+niveau.value+"&number="+number.value);
 }
 
 function ecrireInfoAmi(id,nom, nbAmis){
@@ -45,6 +45,15 @@ function ecrireTempsTraitement(){
 }
 
 function init2(json) {
+    if(json.match("ne correspond à aucun profil")){
+        document.getElementById("infovis").innerHTML = "L'ID ne correspond à aucun profil dans MySpace";
+        document.getElementById("btnClick").disabled="";
+        return false;
+    } else if (json==""){
+        document.getElementById("infovis").innerHTML = "Son profil est privé...";
+        document.getElementById("btnClick").disabled="";
+        return false;
+    }
     document.getElementById("infovis").innerHTML = "";
     //Set node interpolation to linear (can also be 'polar')
     Config.interpolation = "linear";
