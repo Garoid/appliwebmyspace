@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <%-- 
     Document   : index
     Created on : 10 mars 2009, 16:23:24
@@ -5,13 +6,16 @@
 --%>
 <%@page import="java.net.URL;" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.w3.org/MarkUp/SCHEMA/xhtml11.xsd"
+     xml:lang="en" >
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title>Utilisation de l'API MySpace</title>
-        <link rel=stylesheet type="text/css" href="style.css">
+        <link rel="stylesheet" type="text/css" href="style.css" />
         <script type="text/javascript" src="js/excanvas.js"></script>
         <script type="text/javascript" src="js/mootools-1.2.js" ></script>
         <script type="text/javascript" src="js/RGraph.js" ></script>
@@ -32,54 +36,56 @@
 
             <div id="rightmenu">
                 <h2>Enter your informations</h2>
+                <form method="post" action="#">
                 <ul>
-                    <form method="post" action="#">
-                        <li><a href="#">ID of profile<br></a>
+                        <li><a href="#">ID of profile</a><br />
                         <input type="text" name="id" id="idInput" 
                         <%
                         if(request.getParameter("id")!=null)
                             out.print("value=\""+request.getParameter("id")+"\" ");
-                        %>/></li><br />
+                        %>/></li>
+                        <li>&nbsp;</li>
                         <li><a href="#">Number of friends</a></li>
                         <li><select name="profondeur" id="profSelect">
                             <%
                                 for(int i=1;i<=10;i++){
                                     out.print("<option value=\""+i+"\" ");
                                     if(request.getParameter("prof")!=null && i==Integer.parseInt(request.getParameter("prof")))
-                                        out.print("selected ");
+                                        out.print("selected=\"selected\" ");
                                     else if(i==4)
-                                        out.print("selected ");
+                                        out.print("selected=\"selected\" ");
                                     out.println(">"+i+"</option>");
 
                                 }
                             %>
                             </select>
-                        </li><br />
+                        </li>
+                        <li>&nbsp;</li>
                         <li><a href="#">Friends depth</a></li>
                         <li><select name="niveau" id="niveauSelect">
                             <%
                                 for(int i=1;i<=3;i++){
                                     out.print("<option value=\""+i+"\" ");
                                     if(request.getParameter("niveau")!=null && i==Integer.parseInt(request.getParameter("niveau")))
-                                        out.print("selected ");
+                                        out.print("selected=\"selected\" ");
                                     else if(i==2)
-                                        out.print("selected ");
+                                        out.print("selected=\"selected\" ");
                                     out.println(">"+i+"</option>");
 
                                 }
                             %>
                             </select>
-                            <br />
                         </li>
-                        <br />
+                        <li>&nbsp;</li>
                         <li><a href="#">Get friends number ?</a></li>
                         <li><input type="checkbox" id="numberCheck" name="number" <%
-
-                        %>/></li><br />
+                            if(request.getParameter("number")!=null)
+                                out.print("value="+request.getParameter("number")+" ");
+                        %>/></li>
                         <li><input type="button" value="Envoyer" id="btnClick" onclick="init(this.form.id.value,this.form.profondeur,this.form.niveau,this.form.number); return false;"/></li>
+                    </ul>
                     </form>
                     <div id="infos"></div>
-                </ul>
             </div>
 
             <div style="clear: both;"> </div>
