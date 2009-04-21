@@ -2,7 +2,7 @@
 <%-- 
     Document   : index
     Created on : 10 mars 2009, 16:23:24
-    Author     : jasonleborgne
+    Author     : jasonleborgneguillaumefoure
 --%>
 <%@page import="java.net.URL;" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -14,7 +14,7 @@
      xml:lang="en" >
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>Utilisation de l'API MySpace</title>
+        <title>GraphSpace</title>
         <link rel="stylesheet" type="text/css" href="style.css" />
         <script type="text/javascript" src="js/excanvas.js"></script>
         <script type="text/javascript" src="js/mootools-1.2.js" ></script>
